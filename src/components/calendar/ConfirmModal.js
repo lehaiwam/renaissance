@@ -3,11 +3,12 @@ import React, { useLayoutEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 
 import { db } from '../../firebaseConfig'
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore"
 
 import { CustomColors } from '../../constants/CustomColors'
+// import { sendConfirmStatusSMS } from '../../util/sendSMSNotifications'
 
-const ConfirmModal = ({ showModal, setShowModal, user, game }) => {
+const ConfirmModal = ({ confirmActionModal, setConfirmActionModal, userId, game }) => {
     const [currConfirmedStatus, setCurrConfirmedStatus] = useState(undefined)
     const navigation = useNavigation()
 
@@ -17,45 +18,51 @@ const ConfirmModal = ({ showModal, setShowModal, user, game }) => {
             // get the user's record from the table to determine if already confirmed
             try {
                 // update boolean field "confirmed" field to "true" or "false"
-                const docSnap = await getDoc( doc( db, game.title, user.id ))
+                const docSnap = await getDoc( doc( db, game.title, userId ))
                 if (docSnap.exists()) {
                     setCurrConfirmedStatus( docSnap.data().confirmed )
                 } else {
                     // docSnap.data() will be undefined in this case
                     console.log('This golfer has no record in this DB TABLE: ', game.title)
-                    return
                 }
+                return
             } catch (error) {
                 console.log('Failed getDoc(): ', error)
             } 
         }
         getCurrentConfirmedStatus()
-    }, [ showModal ])
+    }, [])
 
 
-    const toggleConfirmedStatus = async () => {  
+    const toggleConfirmedStatus = async () => { 
+
         try {
-            await updateDoc( doc( db, game.title, user.id ), {
+            await updateDoc( doc( db, game.title, userId ), {
                 confirmed: !currConfirmedStatus,
             })
-            setShowModal(false)
-            navigation.navigate('Calendar', {user: user})
+            // send an SMS to tyourself and the Captain COMMENTED FOR NOW
+            // sendConfirmStatusSMS(!currConfirmedStatus, game)
+
+            setConfirmActionModal(false)
+            navigation.navigate('Calendar')
         } catch (error) {
             console.log('Failed updateDoc() confirmed : ', error)
-            setShowModal(false)
-        }   
+            setConfirmActionModal(false)
+        }  
+
     }
    
 
     return (
         <Modal  
-            visible={ showModal } 
-            transparent={ false }
+            visible={ confirmActionModal } 
+            transparent={ true }
             animationType='fade'
             hardwareAccelerated
         >
             <View style={styles.centeredModal}>
                 <View style={styles.modal}>
+                    
                     <View style={styles.gameInfo}>
                         <View style={[styles.gameText, styles.titleDateContainer]}>
                             <Text style={[styles.gameText, styles.gameTitle]}>{ game.title }</Text>
@@ -74,12 +81,13 @@ const ConfirmModal = ({ showModal, setShowModal, user, game }) => {
                                 Do you wish to cancel?
                             </Text>
                         </View>
+
                         <View style={styles.actionsContainer}>
                             <Pressable style={styles.yesButton} onPress={ toggleConfirmedStatus } >
-                                <Text style={styles.yesButtonText}>Cancel</Text>
+                                <Text style={styles.yesButtonText}>Yes</Text>
                             </Pressable>
-                            <Pressable style={styles.noButton} onPress={() => setShowModal(false) } >
-                                <Text style={styles.noButtonText}>Back</Text>
+                            <Pressable style={styles.noButton} onPress={() => setConfirmActionModal(false) } >
+                                <Text style={styles.noButtonText}>No</Text>
                             </Pressable>
                         </View>
                         </>
@@ -92,12 +100,13 @@ const ConfirmModal = ({ showModal, setShowModal, user, game }) => {
                                 Are you joining us?
                             </Text> 
                         </View>
+
                         <View style={styles.actionsContainer}>
                             <Pressable style={styles.yesButton} onPress={ toggleConfirmedStatus } >
-                                <Text style={styles.yesButtonText}>Confirm</Text>
+                                <Text style={styles.yesButtonText}>Yes</Text>
                             </Pressable>
-                            <Pressable style={styles.noButton} onPress={() => setShowModal(false) } >
-                                <Text style={styles.noButtonText}>Back</Text>
+                            <Pressable style={styles.noButton} onPress={() => setConfirmActionModal(false) } >
+                                <Text style={styles.noButtonText}>No</Text>
                             </Pressable>
                         </View>
                         </>
@@ -117,15 +126,14 @@ const styles = StyleSheet.create({
         //backgroundColor: CustomColors.gray200,
     },
     modal: {
-        backgroundColor: CustomColors.blue050,
+        backgroundColor: CustomColors.white,
         opacity: 0.9,
-        width: '100%',
-        height: 250,
+        width: '95%',
+        height: '40%', //300,
         padding: 16,
         borderWidth: 3,
         borderColor: CustomColors.green800,
         borderRadius: 20,
-
     },
     gameInfo: {
         width: '100%',
@@ -134,6 +142,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: CustomColors.blue100,
         borderRadius: 12,
+        marginBottom: 16,
         //borderWidth: 2,
         //borderColor: CustomColors.green800,
     },
@@ -169,11 +178,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         width: '100%',
-        height: '30%',
+        //height: '30%',
         justifyContent: 'center',
         alignItems: 'center',
+        marginVertical: 12,
     },
-
     yesButton: {
         justifyContent: 'center',
         alignItems: 'center',
@@ -196,7 +205,6 @@ const styles = StyleSheet.create({
         height: 40,
         marginLeft: 4,
     },
-
     yesButtonText: {
         color: CustomColors.white,
         fontSize: 16,

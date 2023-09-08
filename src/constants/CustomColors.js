@@ -1,5 +1,6 @@
 export const CustomColors = {
     white: '#ffffff',
+    gray1000:'#232121',
     gray800: '#3e3c3c',
     gray600: '#63585e',
     gray400: '#877e7e',
@@ -13,9 +14,7 @@ export const CustomColors = {
     buttonCustom: '#0000ff',
     buttonOutline: 'transparent',
     green800: '#1ff707',
-
-
-
+    purple600: '#953ce9',
     orange600: '#f46435',
     primary100: '#f9beda',
     primary500: '#c30b64',

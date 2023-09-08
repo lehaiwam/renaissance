@@ -14,10 +14,13 @@ const MenuItemButton = ({iconName, size, color, children, onPressItem}) => {
             onPress={ onPressItem } 
         > 
             { 
-                (iconName === "person-circle-outline") && 
+                (iconName === "md-person-circle-outline") && 
                     <Ionicons name={iconName} size={size} color={color} />
             }
-            
+            { 
+                (iconName === "md-people-circle-outline") && 
+                    <Ionicons name={iconName} size={size} color={color} />
+            }
             {         
                 (iconName === "calendar-month") &&    
                     <MaterialCommunityIcons name={iconName} size={size} color={color} />
@@ -28,8 +31,8 @@ const MenuItemButton = ({iconName, size, color, children, onPressItem}) => {
                     <MaterialIcons name={iconName} size={size} color={color} />  
             }
             {
-                (iconName === "admin-panel-settings") &&  
-                    <MaterialIcons name={iconName} size={size} color={color} />  
+                (iconName === "database-refresh") &&  
+                    <MaterialCommunityIcons name={iconName} size={size} color={color} />  
             }
             <Text style={styles.text}>{children}</Text>
         </Pressable>

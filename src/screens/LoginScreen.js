@@ -1,15 +1,20 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { ImageBackground, KeyboardAvoidingView, StyleSheet, Text, TextInput, View } from 'react-native'
 
 import { auth } from "../firebaseConfig";
 import { signInWithEmailAndPassword } from 'firebase/auth'
 
+import { AuthContext } from '../util/auth-context'
+
 import { CustomColors } from '../constants/CustomColors'
 import CustomButton from '../components/UI/CustomButton'
 import OutlineButton from '../components/UI/OutlineButton'
+// import LoadingOverlay from '../components/UI/LoadingOverlay'
 
 const LoginScreen = ({navigation}) => {
     const bgImage = require('../images/login_background.jpeg')
+
+    const authCtx = useContext(AuthContext);
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -25,15 +30,10 @@ const LoginScreen = ({navigation}) => {
 
         signInWithEmailAndPassword( auth, email, password )
             .then((userCredential) => {
-                // Signed in 
-                const user = userCredential.user;
-                //console.log('Successfully logged in user: ', userCredential.user.email)
-                 
+                // Signed in, set context authUser
+                authCtx.setAuthUser(userCredential.user)
                 // navigate home
-                // console.log('route parameters: ', userCredential.user)
-                navigation.navigate('Home', {
-                    user: userCredential.user,
-                })
+                navigation.navigate('HomeTab')
             })
             .catch((error) => {
                 console.log('Unsuccessful user log in: ', error)
@@ -42,7 +42,6 @@ const LoginScreen = ({navigation}) => {
                 // ..
             });
     }
-
 
     return (
         <ImageBackground style={styles.bgImage} source={ bgImage }>
@@ -80,7 +79,7 @@ const LoginScreen = ({navigation}) => {
                 <CustomButton 
                     passedFunction={ loginHandler }
                 >
-                    Submit
+                    Login
                 </CustomButton>
 
                 <View style={styles.otherContainer}>

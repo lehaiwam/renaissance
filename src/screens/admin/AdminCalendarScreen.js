@@ -1,19 +1,24 @@
-import React, { useEffect ,useState } from 'react'
-import { ActivityIndicator, ImageBackground, ScrollView, StyleSheet, View } from 'react-native'
+import React, { useEffect ,useState, useContext } from 'react'
+import { ImageBackground, StyleSheet, View, Text} from 'react-native'
 import { useIsFocused } from '@react-navigation/native';
 
-import { db } from '../firebaseConfig'
+import { db } from '../../firebaseConfig'
 import { collection, query, getDocs, orderBy } from "firebase/firestore";
 
-import CalendarList from '../components/calendar/CalendarList';
-import { CustomColors } from '../constants/CustomColors';
+import { AuthContext } from '../../util/auth-context'
 
-const CalendarScreen = ({ navigation, route }) => {
-    const bgImage = require('../images/login_background.jpeg')
+import AdminCalendarList from '../../components/admin/AdminCalendarList';
+import AdminCalendarItem from '../../components/admin/AdminCalendarItem';
+import { CustomColors } from '../../constants/CustomColors';
+import LoadingOverlay from '../../components/UI/LoadingOverlay';
+
+const AdminCalendarScreen = ({ navigation, route }) => {
+    const bgImage = require('../../images/login_background.jpeg')
     const [ games, setGames ] = useState([])
+    const [ isLoading, setIsLoading ] = useState(false)
     const isFocused = useIsFocused();
 
-    const user = route.params.user
+    const authCtx = useContext(AuthContext);
 
     useEffect( () => {
         // console.log('in useEffect() loading year schedule...')
@@ -22,7 +27,6 @@ const CalendarScreen = ({ navigation, route }) => {
             const querySnapshot = await getDocs( query(collection(db, "calendar"), orderBy("sequence")) )
             if (querySnapshot.empty) {
                 console.log('Impossible! Empty CALENDAR?')
-                return
             } else {
                 querySnapshot.forEach((doc) => {
                     // doc.data() is never undefined for query doc snapshot
@@ -39,23 +43,41 @@ const CalendarScreen = ({ navigation, route }) => {
                 });
                 setGames(arrayGames)
             }
+            setIsLoading(false)
         }
 
-        if (isFocused) { 
+        if (isFocused && authCtx.authUser) { 
+            setIsLoading(true)
             loadYearSchedule()
         }
-    }, [ isFocused ])
+    }, [ isFocused, authCtx.authUser ])
+
+
+    if (!authCtx.authUser) {
+        return (
+            <View style={styles.notLoggedInContainer}>
+                <Text stylele={styles.notLoggedInText}>  You need to be logged in to access this page!!!</Text>
+            </View>
+        )
+    }
+
+    if (isLoading) {
+        return(
+          <LoadingOverlay message={'Please be patient! Loading our year calendar...'}/>
+        )
+    }
+
 
     return (
         <ImageBackground style={styles.bgImage} source={ bgImage }>
             <View style={ styles.listContainer }>
-                <CalendarList user={ user } games={ games } /> 
+                <AdminCalendarList userId= { authCtx.id } games={ games } /> 
             </View>
         </ImageBackground>
     )
 }
 
-export default CalendarScreen
+export default AdminCalendarScreen
 
 const styles = StyleSheet.create({
     bgImage: {
@@ -69,5 +91,15 @@ const styles = StyleSheet.create({
         height: '100%',
         paddingVertical: 20,
         paddingHorizontal: 12,
+    },
+    notLoggedInContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    notLoggedInText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: CustomColors.error500,
     },
 })

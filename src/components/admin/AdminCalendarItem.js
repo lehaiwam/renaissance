@@ -2,66 +2,64 @@ import React, { useState } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 
-import ResultsModal from './ResultsModal'
+// import ConfirmModal from './ConfirmModal'
 import { CustomColors } from '../../constants/CustomColors'
-import { Entypo } from '@expo/vector-icons';
 
-const CalendarItem = ({ userId, game }) => {
-    const [ resultsModal, setResultsModal] = useState(false)
+
+const AdminCalendarItem = ({ userId, game }) => {
+    // const [ confirmActionModal, setConfirmActionModal] = useState(false)
+
     const navigation = useNavigation()
-    
-    return (
-        <View style={ styles.gameContainer }>
-            <ResultsModal 
-                resultsModal={ resultsModal }
-                setResultsModal={ setResultsModal }
-                game={ game }
-            />
 
+    return (
+        
+        <View style={[styles.itemContainer]} >
             <View style={styles.topText}>
                 <Text style={[styles.baseText, styles.titleText]}>{ game.title}</Text>
                 <Text style={[styles.baseText, styles.dateText]}> { game.date }</Text>  
                 <Text style={[styles.baseText, styles.timeText]}> {game.teeOff} </Text> 
             </View>
+
             <View style={styles.bottomText}>
-            <Text style={[styles.baseText, styles.courseText]} >{game.course}</Text>
-                <Text style={[styles.baseText, styles.weekendText]}>
-                    Weekend away? { (game.weekendAway) ? 
-                    <Entypo name="emoji-happy" size={20} color={CustomColors.green800} /> : 
-                    <Entypo name="emoji-sad" size={20} color="gray" />}
-                </Text> 
+                <Text style={[styles.baseText, styles.courseText]} >
+                    {game.course}
+                </Text>
+                <Pressable 
+                    style={ ({pressed}) => [ styles.button, pressed && styles.pressed ]}
+                    onPress={ () => navigation.navigate('AdminGameDetails', {game: game}) }>
+                    <Text style={styles.buttonText}>
+                        Edit 
+                    </Text>
+                </Pressable>
             </View>
-            
-            <Pressable 
-                style={({ pressed }) => [styles.confirmAction, pressed && styles.pressed]} 
-                onPress={ () => game.status > '3' ? setResultsModal(true) : navigation.navigate('Confirmations', { game: game, userId: userId}) }
-            >
-                <Text style={[styles.confirmText]}>Click for Confirmations or Results</Text>
-            </Pressable>
         </View>
     )
 }    
     
-export default CalendarItem
+export default AdminCalendarItem
 
 const styles = StyleSheet.create({
-    gameContainer: {
+    itemContainer: {
+        width: '100%',
+        // height: '100%',
         backgroundColor: CustomColors.blue050,
         marginVertical: 8,
         borderColor: CustomColors.gray600,
         borderWidth: 2,
-        borderRadius: 8,
-        padding: 8,
+        borderRadius: 16,
+        padding: 4,
     },
     topText: {
         flexDirection: "row",
         justifyContent: 'space-evenly',
     },
     bottomText: {
+        width: '100%',
         flexDirection: "row",
         justifyContent: 'space-between',
         alignItems: 'center',
         marginVertical: 4,
+        paddingHorizontal: 8,
     },
     baseText: {
         color: CustomColors.gray600,
@@ -87,33 +85,38 @@ const styles = StyleSheet.create({
         textAlign: 'left',
     },
     courseText: {
+        //width: '70%',
         fontSize: 16,
         color: CustomColors.primary500,
         fontWeight: '800',
     },
-    weekendText: {
-        fontSize: 16,
-        color: CustomColors.gray800,
-        fontWeight: '800',
-    },
-    confirmAction: {
-        flexDirection: 'row',
+
+    button:{
         justifyContent: 'center',
-        backgroundColor: CustomColors.blue400,
+        alignItems: 'center',
+        backgroundColor: CustomColors.blue600,
+        elevation: 1,
         borderColor: CustomColors.white,
-        borderWidth: 2,
-        borderRadius: 16,
-        paddingHorizontal: 2,
-        paddingVertical: 2,
-        marginTop: 4,
+        borderWidth: 1,
+        borderRadius: 28,
+        width: '25%',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+
+        /*
+        shadowColor: '#000000',
+        shadowOpacity: 0.2,
+        shadowOffset: {width:1, height: 1},
+        shadowRadius: 2,
+        */
+    },
+    buttonText: {
+        textAlign: 'center',
+        fontSize: 16,
+        fontWeight: '800',
+        color: CustomColors.white,
     },
     pressed: {
         opacity: 0.5,
-    },
-    confirmText: {
-        fontSize: 16,
-        textAlign: 'center',
-        color: CustomColors.white,
-        fontWeight: '800',
-    },
+    },    
 })

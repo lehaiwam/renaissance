@@ -1,7 +1,7 @@
 import { db } from '../firebaseConfig'
 import { collection, doc, setDoc, query, getDocs } from "firebase/firestore"; 
 
-export const createDbTable = async (newTable) => {
+export const createDbTables = async (newTable) => {
     
     const tablesArray = [
         'medal-1', 'medal-2', 'medal-3', 'medal-4', 'medal-5', 'medal-6', 'medal-7', 'medal-8', 'coc', 'ips-1', 'ips-2', 'ips-3', 'ips-4', 'tubs-memorial'

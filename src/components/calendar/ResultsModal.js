@@ -5,8 +5,8 @@ import { CustomColors } from '../../constants/CustomColors'
 import { db } from '../../firebaseConfig'
 import { collection, query, getDocs, where, orderBy } from "firebase/firestore";
 
-const ResultsModal = ({ showResultsModal, setShowResultsModal, game }) => {
-    const [gameScores, setGameScores] = useState([])
+const ResultsModal = ({ resultsModal, setResultsModal, game }) => {
+    const [ gameScores, setGameScores ] = useState([])
     const [ errorMessage, setErrorMessage] = useState('')
     
 
@@ -48,8 +48,8 @@ const ResultsModal = ({ showResultsModal, setShowResultsModal, game }) => {
 
     return (
         <Modal  
-            visible={showResultsModal} 
-            transparent={true}
+            visible={ resultsModal } 
+            transparent={ true }
             animationType='fade'
             hardwareAccelerated
         >
@@ -85,7 +85,7 @@ const ResultsModal = ({ showResultsModal, setShowResultsModal, game }) => {
                     }
 
                     <View style={styles.actionsContainer}>
-                        <Pressable style={styles.closeButton} onPress={ () => setShowResultsModal(!showResultsModal) } >
+                        <Pressable style={styles.closeButton} onPress={ () => setResultsModal(!resultsModal) } >
                             <Text style={styles.closeButtonText}>Close</Text>
                         </Pressable>
                     </View>

@@ -1,5 +1,6 @@
-import { ImageBackground, KeyboardAvoidingView, StyleSheet, Text, TextInput, View } from 'react-native'
 import React, { useState } from 'react'
+import { ImageBackground, KeyboardAvoidingView, StyleSheet, Text, TextInput, View } from 'react-native'
+
 import { auth } from "../firebaseConfig";
 import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth'
 
@@ -15,8 +16,8 @@ const RegisterScreen = ({navigation, route}) => {
     const [confirmPassword, setConfirmPassword] = useState('')
     const [validationMessage, setValidationMessage] = useState('')
 
-    const name = route.params.name
-    const lastName = route.params.lastName
+    const firstName = route.params?.firstName
+    const lastName = route.params?.lastName
 
     // Should have a useEffect() loading all PREAPPROVED golfers data 
 
@@ -60,7 +61,7 @@ const RegisterScreen = ({navigation, route}) => {
                     // Loffed in on successfull create user, so navigate to home screen    
                     navigation.navigate('Home', {
                         user: auth.currentUser,
-                        name: name,
+                        firstName: firstName,
                         lastName: lastName,
                     })
                     // ...   
@@ -83,10 +84,9 @@ const RegisterScreen = ({navigation, route}) => {
             <KeyboardAvoidingView 
                 style={styles.container} 
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                
             >
                 <Text style={styles.header}>Register</Text>
-                <Text style={styles.subheader}>Hi! {name} {lastName}</Text>
+                <Text style={styles.subheader}>Hi! { firstName} {lastName}</Text>
 
                 { validationMessage && <Text style={styles.errorTextMessage}>{validationMessage}</Text> }
 

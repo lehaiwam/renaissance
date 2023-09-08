@@ -21,65 +21,14 @@ const ContactUsScreen = ({navigation}) => {
     useEffect(() => {
 
 
-
-
-
     }, [])
 
 
 
     const validateStatusHandler = async () => {
-        console.log('\n\n   Submitted data ...', email, cellphone)
-        
-        const q = query(collection(db, "migs"), where("email", "==", email))
-        const querySnapshot = await getDocs(q)
 
-        if (querySnapshot.empty) {
-            console.log('Email provided not in the MIGS list!!!')
-            setErrorMessage('Email provided not in the MIGS list! Please, check your email?')
-            return
-        } else {
-            querySnapshot.forEach((doc) => {
-                // doc.data() is never undefined for query doc snapshots
-                console.log(doc.id, " => ", doc.data())
-                // compare db data with entered data
-                if ( (email !== doc.data().email) || (cellphone !== doc.data().cell) ) {
-                    console.log('Email and Cellphone mismatch!!!')
-                    setErrorMessage('Provided email and cellphone mismatch with preapproved host data!!!')
-                    return
-                }
-                setEmail('')
-                setCellphone('')
-                setErrorMessage('')
-                navigation.navigate('Register', { name: doc.data().name, lastName: doc.data().lastName})
-            })
-        }
-    
 
-        /*
-        const docRef = doc(db, "migs", 'QPaDDJ68cpVPVSv89lWR');
-        const docSnap = await getDoc(docRef);
 
-        if (docSnap.exists()) {
-            console.log("Document data:", docSnap.data());
-            console.log("         cell:", docSnap.data().cell);
-            // compare the entered cellphone to the  one in the db
-            if ()
-            
-
-        } else {
-            // docSnap.data() will be undefined in this case
-            console.log("No such document!");
-            setErrorMessage('No RGC golfer with that email is a MIGS!!!')
-            return
-        }
-        
-
-        setEmail('')
-        setCellphone('')
-        setErrorMessage('')
-        navigation.navigate('Register', { name: docSnap.data().name, lastName: docSnap.data().lastName})
-        */
     }
 
 
@@ -87,15 +36,10 @@ const ContactUsScreen = ({navigation}) => {
         <ImageBackground style={styles.bgImage} source={ bgImage }>
 
             <View>
-
                 <Text style={styles.header}>Get in touch with us</Text>
-
                 { errorMessage && <Text style={styles.errorMessageText}>{errorMessage}</Text> }
 
 
-
-    
- 
             </View>
             
         </ImageBackground>

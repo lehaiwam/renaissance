@@ -13,8 +13,6 @@ const StatusCheckScreen = ({navigation}) => {
 
     const [email, setEmail] = useState('')
     const [cellphone, setCellphone] = useState('')
-    const [firstName, setFirstName] = useState('')
-    const [lastName, setLastName] = useState('')
     const [errorMessage, setErrorMessage] = useState('')
 
     // useEffect() to load all PREAPPROVED users
@@ -51,35 +49,9 @@ const StatusCheckScreen = ({navigation}) => {
                 setEmail('')
                 setCellphone('')
                 setErrorMessage('')
-                navigation.navigate('Register', { name: doc.data().name, lastName: doc.data().lastName})
+                navigation.navigate('Register', { firstName: doc.data().firstName, lastName: doc.data().lastName})
             })
         }
-    
-
-        /*
-        const docRef = doc(db, "migs", 'QPaDDJ68cpVPVSv89lWR');
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-            console.log("Document data:", docSnap.data());
-            console.log("         cell:", docSnap.data().cell);
-            // compare the entered cellphone to the  one in the db
-            if ()
-            
-
-        } else {
-            // docSnap.data() will be undefined in this case
-            console.log("No such document!");
-            setErrorMessage('No RGC golfer with that email is a MIGS!!!')
-            return
-        }
-        
-
-        setEmail('')
-        setCellphone('')
-        setErrorMessage('')
-        navigation.navigate('Register', { name: docSnap.data().name, lastName: docSnap.data().lastName})
-        */
     }
 
 
@@ -116,24 +88,6 @@ const StatusCheckScreen = ({navigation}) => {
                             setCellphone(value)
                         }}
                     />
-                    {/*
-                    
-                    <TextInput 
-                        style={ styles.inputContainer }
-                        value={firstName}
-                        placeholder={'your first name'}
-                        minLength={3}
-                        onChangeText={(value) => setFirstName(value)}
-                    />
-
-                    <TextInput 
-                        style={ styles.inputContainer }
-                        value={ lastName }
-                        placeholder={'your last name'}
-                        minLength={3}
-                        onChangeText={(value) => setLastName(value)}
-                    />
-                    */}
 
                 </View>
 

@@ -1,12 +1,13 @@
-import { StyleSheet, FlatList, View, Text, ActivityIndicator } from 'react-native'
 import React from 'react'
-import CalendarItem from './CalendarItem'
+import { StyleSheet, FlatList, View, Text, ActivityIndicator } from 'react-native'
+
+
+import AdminMigsItem from './AdminMigsItem'
 import { CustomColors } from '../../constants/CustomColors'
 
+const AdminMigsList = ({ migs }) => {
 
-const CalendarList = ({ userId, games }) => {
-
-    if (!games || games.length < 1 ) {
+    if (!migs || migs.length < 1 ) {
         return (
             <View style={ styles.dataLoadingContainer }>
                 <ActivityIndicator size="large" color="#00ff00" />
@@ -19,11 +20,11 @@ const CalendarList = ({ userId, games }) => {
     return (
         <View style={styles.listContainer}> 
             <FlatList 
-                data={ games }
+                data={ migs }
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => {
                     return (
-                        <CalendarItem userId={ userId } game={ item } />
+                        <AdminMigsItem member={ item } />
                     )
                 }}
             />
@@ -31,7 +32,7 @@ const CalendarList = ({ userId, games }) => {
     )
 }
 
-export default CalendarList
+export default AdminMigsList
 
 const styles = StyleSheet.create({
     dataLoadingContainer: {
@@ -53,7 +54,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         backgroundColor: 'transparent',
-        padding: 4, 
+        paddingHorizontal: 8, 
     }
 
 })
