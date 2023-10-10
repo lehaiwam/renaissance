@@ -18,18 +18,18 @@ export default OutlinedButton
 
 const styles = StyleSheet.create({
     button: {
+        backgroundColor: CustomColors.gray1000,
         width: '45%',
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 8,
-        paddingVertical: 8,
-        margin: 8,
+        paddingVertical: 4,
+        marginVertical: 8,
         borderColor: CustomColors.blue100,
-        borderWidth: 1,
+        borderWidth: 2,
         borderRadius: 16,
         alignSelf: 'flex-end',
-        marginRight: 20,
+        marginLeft: 16,
     },
     icon:{
 

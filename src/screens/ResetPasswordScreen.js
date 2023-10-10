@@ -37,7 +37,9 @@ const ResetPasswordScreen = ({navigation}) => {
                 style={styles.container} 
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
-                <Text style={styles.header}>Reset Password Request</Text>
+                <Text style={styles.header}>Password</Text>
+                <Text style={styles.header}>Reset</Text>
+                <Text style={styles.header}>Request</Text>
 
                 { errorMessage && <Text style={styles.errorMessageText}>{ errorMessage }</Text> }
 
@@ -60,7 +62,7 @@ const ResetPasswordScreen = ({navigation}) => {
                 </CustomButton>
             
                 <View style={styles.otherContainer}>
-                    <Text style={styles.registerText} >Remembered your password?</Text>
+                    <Text style={styles.registerText} >Back To Login?</Text>
                     <OutlineButton 
                         passedOnFunction={ () => navigation.navigate('Login') }
                         color={ CustomColors.white }
@@ -82,18 +84,18 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         width: '100%',
         height: '100%',
+        marginTop: 16,
     },
     container: {
         width: '100%',
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        //marginTop: 52,
-        paddingHorizontal: 12,
+        paddingHorizontal: 16,
     },
     header: {
-        color: CustomColors.gray600,
-        fontSize: 32,
+        color: CustomColors.blue050,
+        fontSize: 40,
         fontWeight: 'bold',
         marginBottom: 12,
     },
@@ -113,16 +115,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     inputContainer: {
-        backgroundColor: CustomColors.blue050,
+        backgroundColor: CustomColors.white,
         width: '90%',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 4,
         marginVertical: 16,
-        marginHorizontal: 24,
         color: CustomColors.gray800,
-        fontSize: 20,
-        fontWeight: '600',
-        borderRadius: 8,
+        fontSize: 16,
+        fontWeight: '400',
+        borderRadius: 24,
         borderColor: CustomColors.gray600,
         borderWidth: 2,
     },
@@ -154,6 +155,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-end',
         alignItems: 'center',
+        marginTop: 8,
     },
     registerText: {
         fontSize: 16,

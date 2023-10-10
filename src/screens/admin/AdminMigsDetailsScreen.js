@@ -11,18 +11,18 @@ import { CustomColors } from '../../constants/CustomColors'
 import CustomButton from '../../components/UI/CustomButton'
 import OutlineButton from '../../components/UI/OutlineButton'
 
+const MEMBER = 1
+const OFFICIAL = 2
+const ADMINISTRATOR = 3
 
 const AdminMigsDetailsScreen = ({navigation, route}) => {
-
-    const MEMBER = 1
-    const OFFICIAL = 2
-    const ADMINISTRATOR = 3
-
+    const { member} = route.params
     const bgImage = require('../../images/login_background.jpeg')
-    const golferImage = require('../../images/human.png')
+    const defaultGolferImageUrl = require('../../images/human.png')
     const authCtx = useContext(AuthContext);
 
     const [id, setId] = useState('')
+    const [imageUrl, setImageUrl] = useState('')
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState( '')
     const [cell, setCell] = useState('')
@@ -30,10 +30,10 @@ const AdminMigsDetailsScreen = ({navigation, route}) => {
     const [authLevel, setAuthLevel] = useState('')
     const [errorMessage, setErrorMessage] = useState('')
 
-    
     useEffect(() => {
-        const { member} = route.params
+        const { member } = route.params
         setId(member.id)
+        setImageUrl(member.imageUrl)
         setFirstName(member.firstName)
         setLastName(member.lastName)
         setCell(member.cell)
@@ -44,9 +44,6 @@ const AdminMigsDetailsScreen = ({navigation, route}) => {
 
 
     const saveChanges = async () => {
-        console.log('\n   Saving changes made to Member details...')
-        console.log('      New MIGS data firstName : ', firstName)
-    
         try {
             const migsRef = doc(db, "migs", id);
             await updateDoc(migsRef, { 
@@ -68,9 +65,6 @@ const AdminMigsDetailsScreen = ({navigation, route}) => {
     const processAuthLevel = (value) => {
         console.log('Value: ', value)
 
-
-
-
     }
 
 
@@ -82,100 +76,100 @@ const AdminMigsDetailsScreen = ({navigation, route}) => {
             </View>
         )
     }
-    
+
     return (
         <ImageBackground style={styles.bgImage} source={ bgImage }>
 
             <KeyboardAvoidingView 
                 style={styles.container} 
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            >
-                <View style={styles.scrollViewContainer} >
+            >                
+                <View style={styles.displayWrapper}>
+                    { errorMessage &&  <Text style={styles.errorTextMessage}>{errorMessage}</Text> }
+                    <View style={styles.golferImgContainer}>
+                        { !imageUrl  &&
+                            <Image
+                                style={styles.golferImage}
+                                source={ defaultGolferImageUrl }
+                            />               
+                        }
+                        { imageUrl &&
+                            <Image
+                                style={styles.golferImage}
+                                source={{ uri: imageUrl }}
+                            />
+                        }
+                    </View>
 
-                
-                    <ScrollView style={styles.scrollView}>
+                    <View style={styles.fullNameContainer}>
+                        <View style={styles.firstContainer}>
+                            <Text style={styles.labelText}>First Name</Text>
+                            <TextInput 
+                                style={ styles.inputContainer }
+                                value={firstName}
+                                onChangeText={(value) => setFirstName(value)}
+                            />
+                        </View>
 
-                        { errorMessage &&  <Text style={styles.errorTextMessage}>{errorMessage}</Text> }
+                        <View style={styles.firstContainer}>
+                            <Text style={styles.labelText}>Last Name</Text>
+                            <TextInput 
+                                style={ styles.inputContainer }
+                                value={lastName}
+                                onChangeText={(value) => {
+                                    setErrorMessage('')
+                                    setLastName(value)
+                                }}
+                            />
+                        </View>
+                    </View>
 
-                        <View style={styles.golferImgContainer}>
-                        <Image
-                            style={styles.golferImage}
-                            source={ golferImage }
+                    <View style={styles.fullWidthContainer}>
+                        <Text style={styles.labelText}>Cellphone</Text>
+                        <TextInput 
+                            style={ styles.inputContainer }
+                            value={ cell }
+                            onChangeText={(value) => {
+                                setErrorMessage('')
+                                setCell(value)
+                            }}
                         />
-                        </View>
+                    </View>
 
-                        <View style={styles.fullNameContainer}>
-                            <View style={styles.firstContainer}>
-                                <Text style={styles.labelText}>First Name</Text>
-                                <TextInput 
-                                    style={ styles.inputContainer }
-                                    value={firstName}
-                                    onChangeText={(value) => setFirstName(value)}
-                                />
-                            </View>
+                    <View style={styles.fullWidthContainer}>
+                        <Text style={styles.labelText}>Email</Text>
+                        <TextInput 
+                            style={ styles.inputContainer }
+                            value={ email }
+                            onChangeText={(value) => {
+                                setErrorMessage('')
+                                setEmail(value)
+                            }}
+                        />
+                    </View>
 
-                            <View style={styles.firstContainer}>
-                                <Text style={styles.labelText}>Last Name</Text>
-                                <TextInput 
-                                    style={ styles.inputContainer }
-                                    value={lastName}
-                                    onChangeText={(value) => {
-                                        setErrorMessage('')
-                                        setLastName(value)
-                                    }}
-                                />
-                            </View>
-                        </View>
+                    <View style={styles.fullWidthContainer}>
+                        <Text style={styles.labelText}>Authorization Level</Text>
+                        <TextInput 
+                            style={ styles.inputContainer }
+                            value={ authLevel.toString() }
+                            onChangeText={(value) =>  processAuthLevel }
+                        />
+                    </View>
 
-                        <View style={styles.fullWidthContainer}>
-                            <Text style={styles.labelText}>Cellphone</Text>
-                            <TextInput 
-                                style={ styles.inputContainer }
-                                value={ cell }
-                                onChangeText={(value) => {
-                                    setErrorMessage('')
-                                    setCell(value)
-                                }}
-                            />
-                        </View>
+                    <CustomButton 
+                        color={ CustomColors.white }
+                        passedFunction={ saveChanges }
+                    >
+                        Save
+                    </CustomButton>
 
-                        <View style={styles.fullWidthContainer}>
-                            <Text style={styles.labelText}>Email</Text>
-                            <TextInput 
-                                style={ styles.inputContainer }
-                                value={ email }
-                                onChangeText={(value) => {
-                                    setErrorMessage('')
-                                    setEmail(value)
-                                }}
-                            />
-                        </View>
-
-                        <View style={styles.fullWidthContainer}>
-                            <Text style={styles.labelText}>Authorization Level</Text>
-                            <TextInput 
-                                style={ styles.inputContainer }
-                                value={ authLevel.toString() }
-                                onChangeText={(value) =>  processAuthLevel }
-                            />
-                        </View>
-
-                        <CustomButton 
-                            color={ CustomColors.white }
-                            passedFunction={ saveChanges }
-                        >
-                            Save
-                        </CustomButton>
-
-                        <OutlineButton 
-                            passedOnFunction={() => navigation.goBack()}
-                            color={ CustomColors.white }
-                        >
-                            Cancel
-                        </OutlineButton>
-
-                    </ScrollView>
-
+                    <OutlineButton 
+                        passedOnFunction={() => navigation.goBack()}
+                        color={ CustomColors.white }
+                    >
+                        Cancel
+                    </OutlineButton>
                 </View>
             </KeyboardAvoidingView>
         </ImageBackground>
@@ -191,60 +185,33 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
-
-    notLoggedInContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    notLoggedInText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: CustomColors.error500,
-    },
     container: {
         flex: 1,
-        //paddingVertical: 20,
-        //justifyContent: 'center',   
-        //alignItems: 'center',
-        //paddingHorizontal: 12,
-    },
-    scrollViewContainer: {
-        flex: 1,
-        justifyContent: 'flex-start',   
+        paddingVertical: 20,
+        justifyContent: 'center',   
         alignItems: 'center',
-        paddingHorizontal: 20,
+        paddingHorizontal: 16,
     },
-    scrollView: {
+    displayWrapper: {
+        justifyContent: 'center',   
+        alignItems: 'center',
         width: '100%',
         height: '100%',
-        paddingVertical: 10,
-        //justifyContent: 'center',   
-        //alignItems: 'center',
-        //paddingHorizontal: 20,
+        paddingVertical: 16,
     },
-    errorMessageText: {
-      color: CustomColors.error500,
-      fontSize: 20,
-      fontWeight: 'bold',
-    },
-
     golferImgContainer: {
-        marginTop: 12,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 12,
         borderColor: CustomColors.white,
         borderWidth: 2,
-        borderRadius: 30,
-        width: '100%',
+        borderRadius: 175,
+        width: '62%',
         height: '35%',
-        
     },
-
     golferImage: {
-        width: '70%',
-        borderRadius: 150,
+        width: '90%',
+        height: '90%',
+        borderRadius: 250,
     },
 
     fullNameContainer: {
@@ -252,7 +219,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginVertical: 16,
+        marginBottom: 16,
     },
     labelText: {
         width: '100%',
@@ -267,18 +234,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginHorizontal: 8,
     },
-
-
     fullWidthContainer: {
         width: '100%',
-        //borderColor: 'red',
-        //borderWidth: 1,
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
-        //paddingLeft: 12,
         marginBottom: 20,
-    },
-
+    },  
     inputContainer: {
         backgroundColor: CustomColors.blue050,
         width: '92%',
@@ -293,17 +254,20 @@ const styles = StyleSheet.create({
         borderColor: CustomColors.white,
         borderWidth: 1,
     },
-
-    otherContainer: {
-        width: '50%',
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
+    //
+    errorMessageText: {
+        color: CustomColors.error500,
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    notLoggedInContainer: {
+        flex: 1,
+        justifyContent: 'center',
         alignItems: 'center',
     },
-    otherText: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: CustomColors.blue100,
-    }
-
+    notLoggedInText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: CustomColors.error500,
+    },
 })

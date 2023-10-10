@@ -2,8 +2,6 @@ import React from 'react'
 import {  } from 'react-native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
-import { AuthContext } from '../util/auth-context'
-
 // import all the screens
 import LoginScreen from '../screens/LoginScreen'
 import RegisterScreen from '../screens/RegisterScreen'
@@ -14,9 +12,6 @@ import { BottomTabNavigator } from './BottomTabNavigator'
 const Stack = createNativeStackNavigator()
 
 const AuthNavigator = () => {
-
-   // const authCtx = useContext(AuthContext)
-
     return (
         <Stack.Navigator
             initialRouteName="Login"

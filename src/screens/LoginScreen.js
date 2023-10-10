@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { ImageBackground, KeyboardAvoidingView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { ImageBackground, KeyboardAvoidingView, Image, StyleSheet, Text, TextInput, View } from 'react-native'
 
 import { auth } from "../firebaseConfig";
 import { signInWithEmailAndPassword } from 'firebase/auth'
@@ -9,10 +9,10 @@ import { AuthContext } from '../util/auth-context'
 import { CustomColors } from '../constants/CustomColors'
 import CustomButton from '../components/UI/CustomButton'
 import OutlineButton from '../components/UI/OutlineButton'
-// import LoadingOverlay from '../components/UI/LoadingOverlay'
 
 const LoginScreen = ({navigation}) => {
     const bgImage = require('../images/login_background.jpeg')
+    const groupImage = require('../images/group-vaal-degrace-2021.jpg')
 
     const authCtx = useContext(AuthContext);
 
@@ -21,8 +21,6 @@ const LoginScreen = ({navigation}) => {
     const [validationMessage, setValidationMessage] = useState('')
 
     const loginHandler = () => {
-        //console.log('Submitted login credentials...', email, password)
-
         if ( !email || !password) {
             setValidationMessage ('Please provide both username and password!!!')
             return
@@ -36,7 +34,6 @@ const LoginScreen = ({navigation}) => {
                 navigation.navigate('HomeTab')
             })
             .catch((error) => {
-                console.log('Unsuccessful user log in: ', error)
                 setValidationMessage (error.message)
                 return
                 // ..
@@ -44,14 +41,30 @@ const LoginScreen = ({navigation}) => {
     }
 
     return (
-        <ImageBackground style={styles.bgImage} source={ bgImage }>
+        <ImageBackground style={styles.bgImage} source={ bgImage }>     
             <KeyboardAvoidingView 
-                style={styles.container} 
+                style={styles.container}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
-                <Text style={styles.header}>Login</Text>
+                { validationMessage && 
+                    <Text style={styles.errorTextMessage}>
+                        { validationMessage }
+                    </Text> 
+                }
 
-                { validationMessage && <Text style={styles.errorTextMessage}>{ validationMessage }</Text> }
+                <Text style={styles.mainHeader}>
+                    Renaissance GC
+                </Text>
+
+                <View style={styles.groupImgContainer}>
+                    <Image
+                        style={styles.groupImageStyle}
+                        source={ groupImage } 
+                        resizeMode={'cover'} 
+                    />
+                </View>
+
+                <Text style={styles.header}>Login</Text>     
 
                 <View style={styles.inputForm}>
                     <TextInput 
@@ -83,7 +96,9 @@ const LoginScreen = ({navigation}) => {
                 </CustomButton>
 
                 <View style={styles.otherContainer}>
-                    <Text style={styles.registerText} >Not registered yet?</Text>
+                    <Text style={styles.registerText} >
+                        Not registered yet?
+                    </Text>
                     <OutlineButton 
                         color={ CustomColors.white }
                         passedOnFunction={ () => navigation.navigate('StatusCheck') }
@@ -93,15 +108,16 @@ const LoginScreen = ({navigation}) => {
                 </View>
             
                 <View style={styles.otherContainer}>
-                    <Text style={styles.registerText} >Forgot your password?</Text>
+                    <Text style={styles.registerText} >
+                        Forgot your password?
+                    </Text>
                     <OutlineButton 
                         passedOnFunction={ () => navigation.navigate('ResetPassword') }
                         color={ CustomColors.white }
                     >
-                        Reset
+                        Reset Password
                     </OutlineButton>
                 </View>
-
             </KeyboardAvoidingView>
         </ImageBackground>
     )
@@ -113,21 +129,41 @@ const styles = StyleSheet.create({
     bgImage: {
         flex: 1,
         alignSelf: 'stretch',
-        width: '100%',
-        height: '100%',
     },
     container: {
         width: '100%',
         height: '100%',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        marginTop: 40,
+        marginBottom: 28,
+        paddingHorizontal: 16,
+        paddingVertical: 28,
+    },
+    mainHeader: {
+        color: CustomColors.blue050,
+        fontSize: 44,
+        fontWeight: 'bold',
+    },
+    groupImgContainer: {
+        width: '100%',
+        height: '25%',
+        marginVertical: 12,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 12,
+    },
+    groupImageStyle: {
+        width: '100%',
+        height: '100%',
+        marginHorizontal: 8,
+        borderRadius: 20,
+        borderColor: CustomColors.blue050,
+        borderWidth: 2,
     },
     header: {
-        color: CustomColors.gray600,
-        fontSize: 32,
+        color: CustomColors.blue050,
+        fontSize: 44,
         fontWeight: 'bold',
-        marginBottom: 12,
     },
     errorTextMessage: {
         width: '90%',
@@ -148,15 +184,15 @@ const styles = StyleSheet.create({
         backgroundColor: CustomColors.white,
         width: '90%',
         paddingHorizontal: 12,
-        paddingVertical: 8,
+        paddingVertical: 4,
         marginVertical: 16,
         marginHorizontal: 24,
         color: CustomColors.gray800,
-        fontSize: 20,
-        fontWeight: '600',
-        borderRadius: 8,
-        borderColor: CustomColors.gray600,
+        fontSize: 16,
+        fontWeight: '400',
+        borderColor: CustomColors.white,
         borderWidth: 2,
+        borderRadius: 24,
     },
     otherContainer: {
         width: '90%',
@@ -168,6 +204,5 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
         color: CustomColors.blue100,
-    }
-
+    },
 })

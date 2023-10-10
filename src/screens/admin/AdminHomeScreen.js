@@ -4,8 +4,10 @@ import { ImageBackground, KeyboardAvoidingView, StyleSheet, Text, TextInput, Vie
 import { AuthContext } from '../../util/auth-context'
 
 import { CustomColors } from '../../constants/CustomColors'
+import { Octicons } from '@expo/vector-icons'; 
 import MenuItemButton from '../../components/UI/MenuItemButton'
 import WarningModal from '../../components/UI/WarningModal'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const AdminHomeScreen = ({navigation}) => {
     
@@ -25,10 +27,15 @@ const AdminHomeScreen = ({navigation}) => {
 
     if ( authCtx.authLevel <= MEMBER ) {
         return (
-            <View style={styles.notLoggedInContainer}>
-                <Text stylele={styles.notLoggedInText}>  You are not authorized to access this functionality!!!</Text>
-                <Text stylele={styles.notLoggedInText}>  Please, contact Club Captain or Application Admistrator.</Text>
-            </View>
+            <ImageBackground style={styles.bgImage} source={ bgImage }>
+                <SafeAreaView style={styles.notAuthorizedWrapper}>
+                    <View>
+                        <Octicons name="stop" size={84} color="red" />
+                    </View> 
+                    <Text style={styles.unAuthorizedText}>  You are not authorized to access this functionality!!!</Text>
+                    <Text style={styles.unAuthorizedText}>  Please, contact Club Captain or Application Administrator.</Text>
+                </SafeAreaView>
+            </ImageBackground>
         )
     }
 
@@ -36,7 +43,6 @@ const AdminHomeScreen = ({navigation}) => {
     return (
         <ImageBackground style={styles.bgImage} source={ bgImage }>
             <View style={styles.mainContainer}>
-
 
                 <WarningModal 
                     showModal={ showModal }
@@ -80,15 +86,6 @@ const AdminHomeScreen = ({navigation}) => {
                     }
  
                 </View>
-
-
-
-
-
-
-
-
-
             </View>
         </ImageBackground>
     )
@@ -123,5 +120,20 @@ const styles = StyleSheet.create({
     },
     actionItemsContainer: {
 
+    },
+    notAuthorizedWrapper: {
+        width: '100%',
+        height: '100%',
+        // backgroundColor:CustomColors.blue050,
+        paddingHorizontal: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    unAuthorizedText: {
+        fontSize: 20,
+        fontWeight: '800',
+        textAlign: 'center',
+        marginTop: 20,
+        color: CustomColors.error500,
     },
 })

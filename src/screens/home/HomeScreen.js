@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { ImageBackground, StyleSheet, Text, View, Alert} from 'react-native'
+import { ImageBackground, StyleSheet, Text, View, Alert, Button} from 'react-native'
 import { useIsFocused } from '@react-navigation/native'
 
 import { auth } from "../../firebaseConfig"
@@ -24,8 +24,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   const username = authCtx.authUser.email
 
-  const userLogout = () => {
-    console.log("\n\n   Logging user out...")
+  const userSignOut = () => {
     signOut(auth)
       .then(() => {
         navigation.replace('Login')
@@ -34,6 +33,24 @@ const HomeScreen = ({ navigation, route }) => {
         Alert.alert('Logout Error!', error.message)
         return
       })
+  }
+
+  const userStaySignedIn = () => {
+    navigation.navigate('Home')
+  }
+
+  const userLogout = () => {
+    Alert.alert('Sign Out?', 'Are you sure you wish to sign out?', [
+      {
+        text: 'No',
+        onPress: userStaySignedIn,
+        style: 'cancel',
+      },
+      {
+        text: 'Yes', 
+        onPress: userSignOut,
+      }
+    ]);
   }
 
   useEffect(() => {
@@ -73,8 +90,7 @@ const HomeScreen = ({ navigation, route }) => {
                 />
             )
         },
-      })
-      
+      })  
     }
     
     if (isFocused) {
@@ -87,16 +103,16 @@ const HomeScreen = ({ navigation, route }) => {
 
   if (isLoading) {
     return (
-      <LoadingOverlay message={'Please be patient! Authenticating your credentials...'}/>
+      <>
+        <LoadingOverlay message={'Please be patient! Authenticating your credentials...'}/>
+        <Button title='Abort' onPress={ () => navigation.navigate('Login') } />
+      </>
     )
   }
 
-  
   return (
       <ImageBackground style={styles.bgImage} source={ bgImage } resizeMode='cover'>
-
           { errorMessage && <Text style={styles.errorMessageText}>{errorMessage}</Text> }
-
           <View style={styles.container}>
               <MenuItemButton 
                 iconName={'md-person-circle-outline'} 
@@ -127,7 +143,6 @@ const HomeScreen = ({ navigation, route }) => {
           </View>
       </ImageBackground>   
   )
-
 }
 
 export default HomeScreen
@@ -138,21 +153,20 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     width: '100%',
     height: '100%',
-},
-errorMessageText: {
-  color: CustomColors.error500,
-  fontSize: 20,
-  fontWeight: 'bold',
-},
-container: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-},
-  
-text: {
+  },
+  errorMessageText: {
+    color: CustomColors.error500,
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  container: {
+      width: '100%',
+      height: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+  },
+  text: {
     color: CustomColors.gray800,
   },
 })

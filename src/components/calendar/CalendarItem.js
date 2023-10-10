@@ -19,14 +19,32 @@ const CalendarItem = ({ userId, game }) => {
             />
 
             <View style={styles.topText}>
-                <Text style={[styles.baseText, styles.titleText]}>{ game.title}</Text>
-                <Text style={[styles.baseText, styles.dateText]}> { game.date }</Text>  
-                <Text style={[styles.baseText, styles.timeText]}> {game.teeOff} </Text> 
+                <Text style={[styles.baseText, styles.titleText]}>{ game.title }</Text>
+                <Text style={[styles.baseText, styles.dateText]}>{ game.date }</Text>  
+                <Text style={[styles.baseText, styles.timeText]}>{ game.teeOff }</Text> 
             </View>
+
+            <View style={styles.middleText}>
+                <Text 
+                    style={[styles.baseText, styles.uniformText]}>
+                    Tops: <Text style={styles.titleText} >{ game.tops }</Text>    Bottoms: <Text style={styles.titleText}>{ game.bottoms }</Text>
+                </Text>
+            </View>
+
+
+
+
+
+
+
             <View style={styles.bottomText}>
-            <Text style={[styles.baseText, styles.courseText]} >{game.course}</Text>
+                <Text style={[styles.baseText, styles.courseText]} > {game.course} </Text>
+                <Text 
+                    style={[styles.baseText, styles.courseText]} >
+                     R {game.fees}
+                </Text>
                 <Text style={[styles.baseText, styles.weekendText]}>
-                    Weekend away? { (game.weekendAway) ? 
+                    Away? { (game.weekendAway) ? 
                     <Entypo name="emoji-happy" size={20} color={CustomColors.green800} /> : 
                     <Entypo name="emoji-sad" size={20} color="gray" />}
                 </Text> 
@@ -48,7 +66,7 @@ const styles = StyleSheet.create({
     gameContainer: {
         backgroundColor: CustomColors.blue050,
         marginVertical: 8,
-        borderColor: CustomColors.gray600,
+        borderColor: CustomColors.white,
         borderWidth: 2,
         borderRadius: 8,
         padding: 8,
@@ -56,6 +74,12 @@ const styles = StyleSheet.create({
     topText: {
         flexDirection: "row",
         justifyContent: 'space-evenly',
+    },
+    middleText: {
+        flexDirection: "row",
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        marginVertical: 4,
     },
     bottomText: {
         flexDirection: "row",
@@ -74,6 +98,12 @@ const styles = StyleSheet.create({
         color: CustomColors.blue600,
     },
     timeText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: CustomColors.error500,
+        textAlign: 'right',
+    },
+    uniformText: {
         fontSize: 16,
         fontWeight: 'bold',
         color: CustomColors.error500,

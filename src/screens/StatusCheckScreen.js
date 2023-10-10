@@ -70,7 +70,7 @@ const StatusCheckScreen = ({navigation}) => {
                     <TextInput 
                         style={ styles.inputContainer }
                         value={email}
-                        placeholder={'your email'}
+                        placeholder={'email'}
                         onChangeText={(value) => {
                             setErrorMessage('')
                             setEmail(value)
@@ -80,7 +80,7 @@ const StatusCheckScreen = ({navigation}) => {
                     <TextInput 
                         style={ styles.inputContainer }
                         value={cellphone}
-                        placeholder={'your cell, 082 555 6666'}
+                        placeholder={'cell no.'}
                         minLength={12}
                         maxLength={12}
                         onChangeText={(value) => {
@@ -98,7 +98,7 @@ const StatusCheckScreen = ({navigation}) => {
                 </CustomButton>
 
                 <View style={ styles.otherContainer }>
-                    <Text style={ styles.otherText } >Back to login?</Text>
+                    <Text style={ styles.otherText } >Back To Login?</Text>
                     <OutlineButton 
                         passedOnFunction={() => navigation.navigate('Login')}
                         color={ CustomColors.white }
@@ -126,13 +126,13 @@ const styles = StyleSheet.create({
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 12,
+        paddingHorizontal: 16,
     },
     header: {
-        color: CustomColors.gray600,
-        fontSize: 32,
+        color: CustomColors.blue050,
+        fontSize: 40,
         fontWeight: 'bold',
-        marginBottom: 12,
+        marginBottom: 24,
     },
     errorMessageText: {
       color: CustomColors.error500,
@@ -145,20 +145,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     inputContainer: {
-        backgroundColor: CustomColors.blue050,
+        backgroundColor: CustomColors.white,
         width: '90%',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 4,
         marginVertical: 16,
-        marginHorizontal: 24,
         color: CustomColors.gray800,
-        fontSize: 20,
-        fontWeight: '600',
-        borderRadius: 8,
-        borderColor: CustomColors.gray600,
+        fontSize: 16,
+        fontWeight: '400',
+        borderRadius: 24,
+        borderColor: CustomColors.white,
         borderWidth: 2,
     },
-
     otherContainer: {
         width: '90%',
         flexDirection: 'row',

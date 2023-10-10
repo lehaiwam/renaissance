@@ -59,11 +59,7 @@ const RegisterScreen = ({navigation, route}) => {
                     // Send email verification mail
                     verifyUserEmail()
                     // Loffed in on successfull create user, so navigate to home screen    
-                    navigation.navigate('Home', {
-                        user: auth.currentUser,
-                        firstName: firstName,
-                        lastName: lastName,
-                    })
+                    navigation.navigate('Login')
                     // ...   
                 })
                 .catch((error) => {
@@ -81,6 +77,7 @@ const RegisterScreen = ({navigation, route}) => {
 
     return (
         <ImageBackground style={styles.bgImage} source={ bgImage }>
+
             <KeyboardAvoidingView 
                 style={styles.container} 
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -143,6 +140,7 @@ const RegisterScreen = ({navigation, route}) => {
                 </View>
 
             </KeyboardAvoidingView>
+
         </ImageBackground>
     )
 }

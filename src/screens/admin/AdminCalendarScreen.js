@@ -37,6 +37,9 @@ const AdminCalendarScreen = ({ navigation, route }) => {
                         date: new Date(newDate).toDateString(),
                         title: doc.data().title,
                         course: doc.data().course,
+                        fees: doc.data().fees,
+                        tops: doc.data().uniform.tops,
+                        bottoms: doc.data().uniform.bottoms,
                         status:  doc.data().status,
                         weekendAway: doc.data().weekendAway,
                     })
@@ -89,7 +92,8 @@ const styles = StyleSheet.create({
     listContainer: {
         width: '100%',
         height: '100%',
-        paddingVertical: 20,
+        paddingTop: 8,
+        paddingBottom: 64,
         paddingHorizontal: 12,
     },
     notLoggedInContainer: {

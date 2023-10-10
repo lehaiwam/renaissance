@@ -22,7 +22,7 @@ const AdminMigsScreen = ({navigation}) => {
     const bgImage = require('../../images/login_background.jpeg')
     const authCtx = useContext(AuthContext);
 
-    console.log('\n\n\n  Logged In User Username: ', authCtx.authUser.email)
+    // console.log('\n\n\n  Logged In User Username: ', authCtx.authUser.email)
 
     const [isLoading, setIsLoading] = useState(false)
     const [migs, setMigs] = useState([])
@@ -51,6 +51,7 @@ const AdminMigsScreen = ({navigation}) => {
                         email: doc.data().email,
                         cell: doc.data().cell,
                         authLevel:  doc.data().authLevel,
+                        imageUrl: doc.data().imageUrl,
                     })
 
                 })
@@ -94,7 +95,6 @@ const AdminMigsScreen = ({navigation}) => {
                 { errorMessage && <Text style={styles.errorMessageText}>{errorMessage}</Text> }
                 <AdminMigsList migs={ migs } /> 
             </View>    
-            
         </ImageBackground>
     )
 }

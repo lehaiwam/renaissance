@@ -2,7 +2,7 @@ import React, { useEffect ,useState, useContext } from 'react'
 import { ImageBackground, StyleSheet, Text, View, ActivityIndicator } from 'react-native'
 import { useIsFocused } from '@react-navigation/native'
 
-import {db} from '../../firebaseConfig'
+import { db } from '../../firebaseConfig'
 import { collection, query, where, getDocs } from "firebase/firestore";
 
 import { AuthContext } from '../../util/auth-context'
@@ -45,10 +45,8 @@ const MigsScreen = ({navigation}) => {
                         firstName: doc.data().firstName,
                         lastName: doc.data().lastName,
                         email: doc.data().email,
-                        emailverified: doc.data().emailVerified, 
                         cell: doc.data().cell,
-                        cellverified: doc.data().cellVerified, 
-                        authLevel:  doc.data().authLevel,
+                        imageUrl: doc.data().imageUrl,
                     })
                 })
                 setMigs(arrayMigs)
@@ -60,7 +58,6 @@ const MigsScreen = ({navigation}) => {
             setIsLoading(true)
             getAllMigs()
         }
-        
     }, [isFocused])
 
 
@@ -85,7 +82,6 @@ const MigsScreen = ({navigation}) => {
 }
 
 export default MigsScreen
-
 
 const styles = StyleSheet.create({
     bgImage: {
@@ -127,6 +123,7 @@ const styles = StyleSheet.create({
         height: '100%',
         backgroundColor: 'transparent',
         paddingHorizontal: 8, 
+        paddingBottom: 64,
     },
     //
     errorMessageText: {

@@ -10,7 +10,7 @@ const CustomButton = ({ passedFunction, children }) => {
             style={ ({pressed}) => [ styles.button, pressed && styles.pressed ]}
             onPress={passedFunction}>
             
-            <Text style={styles.text}>
+            <Text style={styles.buttonText}>
                 {children}
             </Text>
         </Pressable>
@@ -21,15 +21,13 @@ export default CustomButton
 
 const styles = StyleSheet.create({
     button:{
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        marginHorizontal: 12,
+        paddingVertical: 4,
         marginVertical: 12,
         backgroundColor: CustomColors.blue600,
         elevation: 1,
         borderColor: CustomColors.white,
-        borderWidth: 1,
-        borderRadius: 16,
+        borderWidth: 2,
+        borderRadius: 52,
         width: '90%',
         /*
         shadowColor: '#000000',
@@ -41,10 +39,10 @@ const styles = StyleSheet.create({
     pressed: {
         opacity: .5,
     },
-    text: {
+    buttonText: {
         textAlign: 'center',
-        fontSize: 20,
-        fontWeight: '800',
+        fontSize: 16,
+        fontWeight: '600',
         color: CustomColors.white,
     },
 })

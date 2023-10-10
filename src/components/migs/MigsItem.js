@@ -1,4 +1,4 @@
-import React, { useState, useContext, Profiler } from 'react'
+import React, { useState, useContext, Profiler, useEffect } from 'react'
 import { Pressable, StyleSheet, Text, View, Image } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 
@@ -9,18 +9,25 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 const MigsItem = ({ member }) => {
     const authCtx = useContext(AuthContext)
     const defaultGolferImageUrl = require('../../images/human.png')
-
     const navigation = useNavigation()
     
-    // const profileGolferImageUrl =  'https://console.firebase.google.com/project/renaissance-5112a/storage/renaissance-5112a.appspot.com/files/profile-images'
-    // profileGolferImageUrl = profileGolferImageUrl + authCtx.firstName + '-' + authCtx.lastName + '.jpg'
+    const { imageUrl } = member
+    
+    let reformattedCell = ''
 
-
-
-
-
-
-
+    useEffect (() => {
+        const reformattCell = () => {
+            const strCell = member.cell
+            const part1 = strCell.slice(1, 3)
+            const part2 = strCell.slice(3, 6)
+            const part3 = strCell.slice(6, 10)
+            /*
+            console.log('+27 '+ part1 + ' ' + part2 + ' '+ part3)
+            reformattedCell = '+27 '+part1+' '+part2+' '+part3
+            */
+        }
+        reformattCell()
+    })
 
     return (
         <Pressable 
@@ -28,20 +35,30 @@ const MigsItem = ({ member }) => {
             onPress={ () => navigation.navigate('MigsDetails', { member: member }) }>
 
             <View style={styles.golferImgContainer}>
-                <Image
-                    style={styles.golferImage}
-                    source={ defaultGolferImageUrl }
-                />
+                { !imageUrl  &&
+                    <Image
+                        style={styles.golferImage}
+                        source={ defaultGolferImageUrl }
+                    />               
+                }
+                { imageUrl &&
+                    <Image
+                        style={styles.golferImage}
+                        source={{ uri: member.imageUrl }}
+                    />
+                }
             </View>
 
             <View style={styles.nameContainer}>
                 <Text style={[styles.baseText, styles.firstName]}>{ member.firstName}</Text>
                 <Text style={[styles.baseText]}>{ member.lastName }</Text>  
             </View>
+
             <View style={styles.cellEmail}>
                 <MaterialCommunityIcons name="cellphone-wireless" size={24} color="black" />
-                <Text style={[styles.baseText, styles.cellEmailText]}> {member.cell} </Text> 
+                <Text style={[styles.baseText, styles.cellEmailText]}>{member.cell} </Text> 
             </View>
+
             <View style={styles.cellEmail}>
                 <MaterialCommunityIcons name="email" size={24} color="black" />
                 <Text style={[styles.baseText, styles.cellEmailText]}> {member.email} </Text> 
@@ -58,32 +75,23 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        //height: '25%',
         backgroundColor: '#e7eced',
-        opacity: 0.5,
+        opacity: 0.8,
         marginVertical: 8,
         borderColor: CustomColors.white,
         borderWidth: 2,
         borderRadius: 16,
-        //paddingVertical: 8,
     },
     golferImgContainer: {
         width: '90%',
-       // height: 120,
         marginTop: 4,
         justifyContent: 'center',
         alignItems: 'center',
         padding: 8,
-        //borderColor: CustomColors.white,
-        //borderWidth: 2,
         borderRadius: 10,
-        //width: 40,
-        //height :40,
-
         borderColor: 'green',
         borderWidth: 1,
     },
-
     golferImage: {
         width: 100,
         height: 100,
@@ -91,47 +99,39 @@ const styles = StyleSheet.create({
         borderColor: 'green',
         borderWidth: 1, 
     },
-
     nameContainer: {
         width: '90%',
-        //height: '15%',
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 12,
         paddingVertical: 8,
-
-        borderColor: 'red',
-        borderWidth: 1,
+        borderBottomColor: CustomColors.gray800,
+        borderBottomWidth: 1,
     },
     firstName: {
-        marginRight: 12,
+        marginRight: 4,
     },
     //
     cellEmail: {
         width: '90%',
-       // height: '15',   
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        //paddingLeft: 44,
         paddingVertical: 4,
-
-        borderColor: 'red',
-        borderWidth: 1,
+        borderBottomColor: CustomColors.gray800,
+        borderBottomWidth: 1,
+        marginBottom: 4,
     },
     baseText: {
         color: 'black',
         textAlign: 'left',
-        //marginRight: 12,
         fontWeight: '800',
     },
     cellEmailText: {
         marginLeft: 8,
     },
-
-
-    ////
+    //
     topText: {
         flexDirection: "row",
         justifyContent: 'space-evenly',
@@ -144,7 +144,6 @@ const styles = StyleSheet.create({
         marginVertical: 4,
         paddingHorizontal: 8,
     },
-
     dateText: {
         fontSize: 16,
         fontWeight: 'bold',
@@ -164,12 +163,10 @@ const styles = StyleSheet.create({
         textAlign: 'left',
     },
     courseText: {
-        //width: '70%',
         fontSize: 16,
         color: CustomColors.primary500,
         fontWeight: '800',
     },
-
     button:{
         justifyContent: 'center',
         alignItems: 'center',
@@ -181,7 +178,6 @@ const styles = StyleSheet.create({
         width: '25%',
         paddingHorizontal: 8,
         paddingVertical: 4,
-
         /*
         shadowColor: '#000000',
         shadowOpacity: 0.2,

@@ -2,11 +2,14 @@ import React, { useEffect, useState, useContext } from 'react'
 import { ImageBackground, KeyboardAvoidingView, StyleSheet, Pressable, Text, View, TextInput, Image } from 'react-native'
 import { useIsFocused } from '@react-navigation/native'
 
+// fibase/firestone
 import {db} from '../../firebaseConfig'
 import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore"
 
+//firebase/storage
+import { storage } from '../../firebaseConfig'
+import { ref, getDownloadURL } from "firebase/storage";
 import { Entypo } from '@expo/vector-icons';
-
 import { CustomColors } from '../../constants/CustomColors'
 import CustomButton from '../../components/UI/CustomButton'
 import OutlineButton from '../../components/UI/OutlineButton'
@@ -30,6 +33,8 @@ const MyProfileScreen = ({navigation, route}) => {
     const [email, setEmail] = useState('')
     const [emailVerified, setEmailVerified] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
+    const [imageUrl, setImageUrl] = useState('')
+    const [downloadURL, setDownloadURL] = useState('')
 
     let myProfile = false     // Initializing that user is NOT looking at his own profile
 
@@ -38,22 +43,51 @@ const MyProfileScreen = ({navigation, route}) => {
         getMigsDocument = async() => {
             const arrayMigs = []
             const q = query(collection(db, "migs"), where('email', '==', authCtx.authUser.email))
-            const querySnapshot = await getDocs(q)
-            if (querySnapshot.empty) {
-                console.log('MIGS not found? Impossible!!!')
-                setErrorMessage('Registered user with no MIGS record?Impossible!!!')
-            } else {
-                querySnapshot.forEach(async (doc) => {
-                    console.log(doc.id, " => ", doc.data())
-                    setId(doc.id)
-                    setFirstName(doc.data().firstName)
-                    setLastName(doc.data().lastName)
-                    setCell(doc.data().cell)
-                    setCellVerified(doc.data().cellVerified)
-                    setEmail(doc.data().email)
-                    setEmailVerified(doc.data().emailVerified)
-                    setErrorMessage('')
-                })
+            try {
+                const querySnapshot = await getDocs(q)
+                if (querySnapshot.empty) {
+                    console.log('MIGS not found? Impossible!!!')
+                    setErrorMessage('Registered user with no MIGS record?Impossible!!!')
+                } else {
+                    querySnapshot.forEach ( (doc) => {
+                        // console.log(doc.id, " => ", doc.data())
+                        setId(doc.id)
+                        setFirstName(doc.data().firstName)
+                        setLastName(doc.data().lastName)
+                        setCell(doc.data().cell)
+                        setCellVerified(doc.data().cellVerified)
+                        setEmail(doc.data().email)
+                        setEmailVerified(doc.data().emailVerified)
+                        setImageUrl(doc.data().imageUrl)
+                        setErrorMessage('')
+                    })
+                }
+
+                if (!imageUrl) {
+                    // If no imageUrl set, try to obtain the URL of the expected profile picture file
+                    // console.log('\n\n   Obtaining the downloadURL...')
+                    const userImageFileName = authCtx.firstName.toLowerCase() + '-' + authCtx.lastName.toLowerCase()
+                    const imageFileRef = ref(storage, `profile-images/${userImageFileName}`);
+                    
+                    // Get the download URL
+                    url = await getDownloadURL(imageFileRef)
+                    // console.log('\n\n   DownloadURL: ', url)
+                    setImageUrl(url)
+
+                    if (imageUrl.length > 1) {
+                        try {
+                            const migsRef = doc(db, "migs", id);
+                            await updateDoc(migsRef, { 
+                                imageUrl: imageUrl,
+                            })
+                        } catch (error) {
+                            console.log('Error updating imageUrl on MIGS updateDoc(): ', error) 
+                        }
+                    }
+                }
+
+            } catch (error) {
+                console.log(error)
             }
             setIsLoading(false)
         }
@@ -66,10 +100,6 @@ const MyProfileScreen = ({navigation, route}) => {
 
 
     const saveChanges = async () => {
-        console.log('\n   Saving changes (only email & cellphone) made to MIGS...')
-        console.log('      New MIGS cell: ', cell)
-
-        /*
         try {
             const migsRef = doc(db, "migs", id);
             await updateDoc(migsRef, { 
@@ -78,10 +108,7 @@ const MyProfileScreen = ({navigation, route}) => {
         } catch (error) {
             console.log('Error on MIGS updateDoc(): ', error) 
         }
-    
-        console.log('Successfully updated this MIGS record: ', lastName)
         navigation.navigate('Migs')
-        */
     }
 
     if (isLoading) {
@@ -90,8 +117,6 @@ const MyProfileScreen = ({navigation, route}) => {
         )
     }
    
-
-    // console.log( authCtx.authUser.email , email)
     if ( authCtx.authUser.email !== email  && authCtx.cell !== cell) {
         return (
             <View style={styles.unauthorized}>
@@ -101,7 +126,6 @@ const MyProfileScreen = ({navigation, route}) => {
         )
     }
     
-
     return (
         <ImageBackground style={styles.bgImage} source={ bgImage }>
             <KeyboardAvoidingView 
@@ -113,10 +137,19 @@ const MyProfileScreen = ({navigation, route}) => {
                 <View style={styles.golferDataContainer}>
 
                     <View style={styles.golferImgContainer}>
-                        <Image
-                            style={styles.golferImage}
-                            source={ golferImage }
-                        />
+                        { !imageUrl  &&
+                            <Image
+                                style={styles.golferImage}
+                                source={ golferImage }     
+                            />
+                        } 
+                        
+                        { imageUrl &&
+                            <Image
+                                style={styles.golferImage}
+                                source={{ uri: imageUrl }}     
+                            />
+                        }
                     </View>
 
                     <View style={styles.fullNameContainer}>
@@ -205,11 +238,11 @@ const styles = StyleSheet.create({
     bgImage: {
         flex: 1,
         alignSelf: 'stretch',
-        width: '100%',
-        height: '100%',
+
     },
     container: {
-        flex: 1,
+        width: '100%',
+        height: '100%',
         paddingHorizontal: 12,
         paddingVertical: 16,
         justifyContent: 'flex-start',   

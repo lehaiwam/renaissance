@@ -3,32 +3,39 @@ import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 
 import { db } from '../../firebaseConfig'
-import { doc, deleteDoc } from "firebase/firestore";
-
+import { doc, deleteDoc } from "firebase/firestore"
 
 // import ConfirmModal from './ConfirmModal'
+import AdminMigsDeleteModal from './AdminMigsDeleteModal'
 import { CustomColors } from '../../constants/CustomColors'
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { MaterialIcons } from '@expo/vector-icons'
 
 const AdminMigsItem = ({ member }) => {
-    // const [ confirmActionModal, setConfirmActionModal] = useState(false)
+    const [ confirmActionModal, setConfirmActionModal] = useState(false)
 
     const navigation = useNavigation()
 
-    const deleteMigs = async () => {
-        console.log('Deleting member : ', member.id)
+    const deleteMigs = async (golferId) => {
+
         try {
-            await deleteDoc(doc(db, "migs", member.id))
+            await deleteDoc(doc(db, "migs", golferId))
         } catch (error) {
             console.log('Error on deleteDoc(): ', error) 
         }
         console.log('Successfully deleted this MIGS record: ', member)
-        navigation.goBack()
     }
 
     return (
         <View style={styles.itemContainer}>
+
+            <AdminMigsDeleteModal 
+                confirmActionModal={ confirmActionModal }
+                setConfirmActionModal={setConfirmActionModal}
+                deleteMigs={ deleteMigs }
+                golfer={ member }
+            />
+
             <View style={styles.name}>
                 <Text style={[styles.nameText]}>{ member.firstName } { member.lastName } </Text> 
             </View>
@@ -48,7 +55,7 @@ const AdminMigsItem = ({ member }) => {
 
                 <Pressable 
                     style={ ({pressed}) => [ styles.button, pressed && styles.pressed ]}
-                    onPress={ deleteMigs } >
+                    onPress={ () => setConfirmActionModal(true) }>
                     <MaterialIcons name="delete-outline" size={16} color="black" />
                     <Text>Delete</Text>
                 </Pressable>  
@@ -63,7 +70,6 @@ export default AdminMigsItem
 const styles = StyleSheet.create({
     itemContainer: {
         width: '100%',
-        // height: '100%',
         backgroundColor: CustomColors.blue050,
         marginVertical: 8,
         borderColor: CustomColors.white,
@@ -91,12 +97,10 @@ const styles = StyleSheet.create({
         marginVertical: 4,
         paddingHorizontal: 8,
     },
-
     button:{
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-        //backgroundColor: 'transparent',
         elevation: 1,
         borderColor: CustomColors.white,
         borderWidth: 2,

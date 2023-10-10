@@ -5,77 +5,76 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { AuthContext } from '../util/auth-context'
 
 // import all the screens
-import AdminHomeScreen from '../screens/admin/AdminHomeScreen'
-import AdminMigsScreen from '../screens/admin/AdminMigsScreen'
-import AdminMigsDetailsScreen from '../screens/admin/AdminMigsDetailsScreen'
-import AdminCalendarScreen from '../screens/admin/AdminCalendarScreen'
-import AdminGameDetailsScreen from '../screens/admin/AdminGameDetailsScreen'
-
+import CompetitionsHomeScreen from '../screens/home/CompetitionsHomeScreen'
+import MedalScreen from '../screens/home/MedalScreen'
+import StablefordScreen from '../screens/home/StablefordScreen'
+import ChampOfChampsScreen from '../screens/home/ChampOfChampsScreen'
+import TubsMemorialScreen from '../screens/home/TubsMemorialScreen'
 import { CustomColors } from '../constants/CustomColors'
 
 const Stack = createNativeStackNavigator()
 
-const AdminNavigator = () => {
+const CompetitionsNavigator = () => {
 
    // const authCtx = useContext(AuthContext)
 
     return (
         <Stack.Navigator
-            initialRouteName="AdminHome"
+            initialRouteName="CompetitionsHome"
             screenOptions={{
                 headerShown: true,
             }}
         >
             <Stack.Screen
-                name="AdminHome" 
-                component={AdminHomeScreen} 
+                name="CompetitionsHome" 
+                component={CompetitionsHomeScreen} 
                 options={{
-                    headerShown:false,
+                    headerShown: false,
                 }}
             />
-
             <Stack.Screen 
-                name="AdminMigs" 
-                component={AdminMigsScreen} 
+                name="Medal" 
+                component={MedalScreen} 
                 options={{
-                    title: 'MIGS Maintenance',
+                    title: 'Medal',
                     headerStyle: {
                         backgroundColor: CustomColors.blue050,
                     },
                 }}
             />
             <Stack.Screen 
-                name="AdminMigsDetails" 
-                component={AdminMigsDetailsScreen} 
+                name="Stableford" 
+                component={ StablefordScreen } 
                 options={{
-                    title: 'MIGS Details Maintenance',
+                    title: 'Stableford',
                     headerStyle: {
                         backgroundColor: CustomColors.blue050,
                     },
                 }}
-            />    
+            />
             <Stack.Screen 
-                name="AdminCalendar" 
-                component={AdminCalendarScreen} 
+                name="ChampOfChamps" 
+                component={ChampOfChampsScreen} 
                 options={{
-                    title: 'Calendar Maintenance',
+                    title: 'Champ Of Champs',
+                    headerStyle: {
+                        backgroundColor: CustomColors.blue050,
+                    },
+                }}
+            />
+            <Stack.Screen 
+                name="TubsMemorial" 
+                component={TubsMemorialScreen} 
+                options={{
+                    title: 'Tubs Monareng Memorial',
                     headerStyle: {
                         backgroundColor: CustomColors.blue050,
                     },
                 }}
             />   
-            <Stack.Screen 
-                name="AdminGameDetails" 
-                component={AdminGameDetailsScreen} 
-                options={{
-                    title: 'Game Details Maintenance',
-                    headerStyle: {
-                        backgroundColor: CustomColors.blue050,
-                    },
-                }}
-            />    
+    
         </Stack.Navigator>
     )
 }
 
-export { AdminNavigator }
+export {CompetitionsNavigator }

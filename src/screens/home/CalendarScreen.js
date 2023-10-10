@@ -36,8 +36,11 @@ const CalendarScreen = ({ navigation, route }) => {
                         date: new Date(newDate).toDateString(),
                         title: doc.data().title,
                         course: doc.data().course,
+                        fees: doc.data()?.fees > 0 ? doc.data().fees : 0,
                         status:  doc.data().status,
                         weekendAway: doc.data().weekendAway,
+                        tops: doc.data().uniform?.tops.length ? doc.data().uniform.tops : '',
+                        bottoms: doc.data().uniform?.bottoms.length ?doc.data().uniform.bottoms : '' ,
                     })
                 });
                 setGames(arrayGames)
@@ -55,7 +58,7 @@ const CalendarScreen = ({ navigation, route }) => {
     if (!authCtx.authUser) {
         return (
             <View style={styles.notLoggedInContainer}>
-                <Text style={styles.notLoggedInText}>  You need to be logged in to access this page!!!</Text>
+                <Text style={styles.notLoggedInText}> You need to be logged in to access this page!!! </Text>
             </View>
         )
     }
@@ -66,11 +69,10 @@ const CalendarScreen = ({ navigation, route }) => {
         )
     }
 
-
     return (
-        <ImageBackground style={styles.bgImage} source={ bgImage }>
+        <ImageBackground style={ styles.bgImage } source={ bgImage }>
             <View style={ styles.listContainer }>
-                <CalendarList userId= { authCtx.id } games={ games } /> 
+                <CalendarList userId={ authCtx.id } games={ games } /> 
             </View>
         </ImageBackground>
     )
@@ -88,8 +90,9 @@ const styles = StyleSheet.create({
     listContainer: {
         width: '100%',
         height: '100%',
-        paddingVertical: 20,
-        paddingHorizontal: 12,
+        paddingTop: 12,
+        paddingBottom: 64,
+        paddingHorizontal: 16,
     },
     notLoggedInContainer: {
         flex: 1,

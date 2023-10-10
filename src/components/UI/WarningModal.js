@@ -9,7 +9,7 @@ const WarningModal = ({ showModal, setShowModal, message }) => {
 
     const initDatabaseHandler = async () => {
         console.log('   INITIALIZING DATABASE...')
-        // await createDbTables()
+        await createDbTables()
         setShowModal(false)
     }
 

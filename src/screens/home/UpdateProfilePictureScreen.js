@@ -1,23 +1,27 @@
 import React, { useState, useContext } from 'react';
-import { StyleSheet, Button, Image, View, Text, Alert, Pressable } from 'react-native'
+import { ImageBackground, StyleSheet, Image, View, Text, Alert, Pressable, ActivityIndicator } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import * as FileSystem from 'expo-file-system'
 
+import { delay } from '../../util/general-utils'
 import { AuthContext } from '../../util/auth-context'
-import { storage } from '../../firebaseConfig'
-import { ref, uploadBytes } from 'firebase/storage'
 
+// fibase/firestone
+import {db} from '../../firebaseConfig'
+import { doc, updateDoc } from "firebase/firestore"
+
+//firebase/storage
+import { storage } from '../../firebaseConfig'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { CustomColors } from '../../constants/CustomColors';
 
 const UpdateProfilePictureScreen = ({navigation}) => {
-
+    const bgImage = require('../../images/login_background.jpeg')
     const authCtx = useContext(AuthContext);
-
     const [image, setImage] = useState(null);
     const [uploading, setUploading] = useState(false)
 
     const getProfileImage = async () => {
-        // No permissions request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsEditing: true,
@@ -32,34 +36,27 @@ const UpdateProfilePictureScreen = ({navigation}) => {
             Alert.alert('Select New Profile Picture', 'Action Cancelled', [
                 {   text: 'OK', 
                     onPress: () => {
-                        console.log('OK Pressed')
+                        console.log('New Profile Picture load abandoned')
                         //return
                     },
                     style: 'okay',
                 },
             ]);
         }
+        //console.log('\n\n   Successfully selected an image')
     }
 
-    const uploadProfileImage = async () => {
-        console.log('\n\n    1. Uploading...image: ', image)
-        setUploading(true)
-
+    const uploadImage = async () => {
+        // console.log('\n\n   Uploading selected image...')
         try {
-            console.log('\n\n    2. Getting URI...')
             const { uri }  = await FileSystem.getInfoAsync(image)
-            console.log('\n\n    3. URI: ', uri)
-
             const blob = await new Promise((resolve, reject) => {
-                console.log('\n\n   4. Inside the promise() initiating XMLHttps...: ')
                 const xhr = new XMLHttpRequest()
                 xhr.onload = () => {
                     // return the blob
-                    console.log('\n    4.1 RESOLVED...')
                     resolve(xhr.response)
                 }
                 xhr.onerror = (e) => {
-                    console.log('\n     4.2 REJECT...')
                     reject(new TypeError('Network Rquest Failed'))
                 }
                 xhr.responseType = 'blob'
@@ -67,23 +64,27 @@ const UpdateProfilePictureScreen = ({navigation}) => {
                 xhr.send(null)
             })
 
-            console.log('\n\n    5. BLOB: ', JSON.stringify(blob))
-
+            // console.log('\n\n    5. BLOB: ', JSON.stringify(blob))
             const filename = image.substring(image.lastIndexOf('/') + 1)
-            console.log('\n\n    6. FILENAME: ', filename)
-
-            // TODO: replace 'filename' with actual name of logged in user, e.g. 'Chippa-Ndenga'
+            // Replace 'filename' with actual name of logged in user, e.g. 'chippa-ndenga'
             const newFileName = authCtx.firstName.toLowerCase() + '-' + authCtx.lastName.toLowerCase()
-            console.log('\n\n    7. NEW FILENAME: ', newFileName)
-
             const storageRef = ref(storage, `profile-images/${newFileName}` );
-            // 'file' comes from the Blob or File API
-            await uploadBytes(storageRef, blob).then((snapshot) => {
-                console.log('\n\n    8. Uploaded a blob or file!');
-            });
+            
+            setUploading(true)
+
+            await uploadBytes(storageRef, blob)
+            .then((snapshot) => {
+                console.log('\n\n   Uploaded a blob or file: ', newFileName);
+            })
+
+            /** -------------------------------------------------------------------------- */
+            // TODO: Remember to remove this delay
+            // Delay continuation for a further 5 secs to see effect of activity indicator
+            await delay(5000);
+            // console.log("Waited 5s");
+            /** -------------------------------------------------------------------------- */
 
             setUploading(false)
-            console.log('\n\n    9. Image file successfully uploaded!!!')
             setImage(null)
 
             Alert.alert('DONE!!!', 'Image file successfully uploaded to Firebase Cloud Storage.', [
@@ -94,8 +95,14 @@ const UpdateProfilePictureScreen = ({navigation}) => {
                     },
                     style: 'okay',
                 },
-            ]);
+            ])
 
+            const downloadUrl = await getDownloadURL(storageRef)
+            // console.log('\n\n   Image DownloadUrl: ', downloadUrl)
+            const migsRef = doc(db, "migs", authCtx.id);
+            await updateDoc(migsRef, { 
+                imageUrl: downloadUrl,
+            })
         } catch (error) {
             console.log(error)
             setUploading(false)          
@@ -103,8 +110,8 @@ const UpdateProfilePictureScreen = ({navigation}) => {
     }
 
 
-
     return (
+        <ImageBackground style={styles.bgImage} source={ bgImage }>
         <View style={styles.mainContainer}>
             { !image && 
                 <Pressable 
@@ -116,7 +123,6 @@ const UpdateProfilePictureScreen = ({navigation}) => {
                 </Pressable>
             }
         
-
             { image && 
                 <>
                 <Image 
@@ -124,25 +130,35 @@ const UpdateProfilePictureScreen = ({navigation}) => {
                     source={{ uri: image }}    
                 />
 
-
                 <Pressable 
                     style={ ({pressed}) => [ styles.button, pressed && styles.pressed ]}
-                    onPress={ uploadProfileImage }>
+                    onPress={ uploadImage }>
                     <Text style={styles.buttonText}>
                         Upload Image
                     </Text>
                 </Pressable>
-
                 </>
             }
-            
+
+            { uploading && 
+                <View style={styles.activityWrapper}>
+                    <ActivityIndicator size="large" color="#00ff00" />
+                </View>
+            }
         </View>
+        </ImageBackground>
     )
 }
 
 export default UpdateProfilePictureScreen
 
 const styles = StyleSheet.create({
+    bgImage: {
+        flex: 1,
+        alignSelf: 'stretch',
+        width: '100%',
+        height: '100%',
+    },
     mainContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -167,14 +183,15 @@ const styles = StyleSheet.create({
     pressed: {
         opacity: 0.5,
     },
-    btnContainer: {
-        width: '50%',
-        borderRadius: 30,
-    },
     image: {
         width: 200, 
         height: 200, 
         borderRadius: 100,
         marginVertical: 16, 
+    },
+    activityWrapper: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '80%',
     },
 })

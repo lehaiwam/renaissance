@@ -1,204 +1,151 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { ImageBackground, KeyboardAvoidingView, StyleSheet, Pressable, Text, View, TextInput, Image } from 'react-native'
+import { ImageBackground, StyleSheet, Text, View, FlatList, Image } from 'react-native'
+import { useIsFocused } from '@react-navigation/native'
 
-import {db} from '../../firebaseConfig'
-import { doc, updateDoc } from "firebase/firestore"
+import { AuthContext } from '../../util/auth-context'
 
-import { Entypo } from '@expo/vector-icons';
+import { db } from '../../firebaseConfig'
+import { collection,  query, doc, getDoc } from "firebase/firestore"
 
+import ScoreItem from '../../components/migs/ScoreItem'
 import { CustomColors } from '../../constants/CustomColors'
 import CustomButton from '../../components/UI/CustomButton'
 import OutlineButton from '../../components/UI/OutlineButton'
-import { AuthContext } from '../../util/auth-context'
+import LoadingOverlay from '../../components/UI/LoadingOverlay';
+
 
 const MigsDetailsScreen = ({navigation, route}) => {
-
     const bgImage = require('../../images/login_background.jpeg')
-    const golferImage = require('../../images/human.png')
+    const defaultGolferImage = require('../../images/human.png')
 
-    const authCtx = useContext(AuthContext);
+    const authCtx = useContext(AuthContext)
 
-    const [id, setId] = useState('')
+    const isFocused = useIsFocused()
+    const [isLoading, setIsLoading] = useState(false)    
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState( '')
-    const [cell, setCell] = useState('')
-    const [cellVerified, setCellVerified] = useState(false)
-    const [email, setEmail] = useState('')
-    const [emailVerified, setEmailVerified] = useState(false)
-    const [authLevel, setAuthLevel] = useState(0)
+    const [medalScores, setMedalScores] = useState([])
+    const [ipsScores, setIpsScores] = useState([])
     const [errorMessage, setErrorMessage] = useState('')
 
-    let myProfile = false     // Initializing that user is NOT looking at his own profile
-
     const { member} = route.params
-     console.log('\n   Member: ', member)
-
-     /*
+    
+    // console.log('\n   Member: ', member)
+    
     useEffect(() => {
-        console.log('useEffect() mounting MigsDetailsScreen...')
-        const initForm = () => {
-           
-            setId(member.id)
-            setFirstName(member.firstName)
-            setLastName(member.lastName)
-            setCell(member.cell)
-            setCellVerified(member.cellVerified)
-            setEmail(member.email)
-            setEmailVerified(member.emailVerified)
-            setErrorMessage('')
+
+        const getCompetitionsScores = async() => {
+            const arrayMedalScores = []
+            const arrayIpsScores = []
+
+            // get one document.....
+            const docRef = doc(db, "all-scores", member.id)
+            const docSnap = await getDoc(docRef)
+
+            if (!docSnap.exists()) {
+                console.log('ALL-SCORES record not found for ', + member.firstName + ' ' + member.lastName + '!!!')
+                setErrorMessage('ALL-SCORES record not found for ', + member.firstName + ' ' + member.lastName + '!!!')
+            } else {
+                // console.log( docSnap.id, " => ", docSnap.data())
+                for ( let iCount=0; iCount<docSnap.data().scores.length; iCount++ ) {
+                    if (docSnap.data().scores[iCount].title.slice(0,3) === 'med') { 
+                        arrayMedalScores.push({
+                            id: iCount,
+                            title: docSnap.data().scores[iCount].title,
+                            score: docSnap.data().scores[iCount].score
+                        })
+                    } 
+
+                    if (docSnap.data().scores[iCount].title.slice(0,3) === 'ips') { 
+                        arrayIpsScores.push({
+                            id: iCount,
+                            title: docSnap.data().scores[iCount].title,
+                            score: docSnap.data().scores[iCount].score
+                        }) 
+                    }
+                }
             
+                setMedalScores(arrayMedalScores)
+                setIpsScores(arrayIpsScores)
+
+                setFirstName(docSnap.data().firstName)
+                setLastName(docSnap.data().lastName)
+            }
+            setIsLoading(false)
         }
-        initForm()
-    }, [])
 
-    */
-
-    const saveChanges = async () => {
-        console.log('\n   Saving changes (only email & cellphone) made to MIGS...')
-        console.log('      New MIGS cell & email: ', cell, + ' ' + email)
-
-        /*
-        try {
-            const migsRef = doc(db, "migs", id);
-            await updateDoc(migsRef, { 
-                email: email,
-                cell: cell,
-            })
-        } catch (error) {
-            console.log('Error on MIGS updateDoc(): ', error) 
+        if (isFocused) {
+            setIsLoading(true)
+            getCompetitionsScores()
         }
-    
-        console.log('Successfully updated this MIGS record: ', lastName)
-        navigation.navigate('Migs')
-        */
+        
+    }, [isFocused])
 
+
+    if (isLoading) {
+        return (
+            <LoadingOverlay message={'Please be patient! Fetching SCORES data online...'} />
+        )
     }
-
-
-    const loadNewProfilePic = (value) => {
-        console.log('\n   Loading a new profile picture...')
-
-
-
-
-    }
-
-    
-    console.log( authCtx.authUser.email , member.email)
-    
-    if ( authCtx.authUser.email === member.email ) {
-       myProfile = true
-    }
-    
 
     return (
         <ImageBackground style={styles.bgImage} source={ bgImage }>
-
-            <KeyboardAvoidingView 
+            <View 
                 style={styles.container} 
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
-                { errorMessage &&  <Text style={styles.errorTextMessage}>{errorMessage}</Text> }
+                { errorMessage && <Text style={styles.errorMessageText}>{errorMessage}</Text> }
+                { !member.imageUrl  &&
+                    <Image
+                        style={styles.golferImage}
+                        source={ defaultGolferImage }
+                    />               
+                }
+                { member.imageUrl &&
+                    <Image
+                        style={styles.golferImage}
+                        source={{ uri: member.imageUrl }}
+                    />
+                }              
+                                      
+                <Text style={ styles.nameText }>
+                    { firstName } { lastName }
+                </Text>
 
+                <View style={ styles.gameGoupWrapper} >
+                    <View style={styles.listContainer}>
+                        <Text style={ styles.gameTypeHeader }>
+                            IPS Games: 
+                        </Text>
 
-                    <View style={styles.golferDataContainer}>
-
-                        <View style={styles.golferImgContainer}>
-                            <Image
-                                style={styles.golferImage}
-                                source={ golferImage }
-                            />
-                            <input
-                                type='file'
-                                style={styles.golferImgContainer}
-                                onPress={ loadNewProfilePic }
-                            >
-                                <Entypo name="upload" size={24} color="black" />
-                                <Text>Wish to upload a new profile pic?</Text>
-                            </input>
-                        </View>
-
-
-                       
-                        <View style={styles.fullNameContainer}>
-                            <View style={styles.firstContainer}>
-                                <Text style={styles.labelText}>First Name</Text>
-                                <TextInput 
-                                    style={ styles.inputContainer }
-                                    value={firstName}
-                                    onChangeText={(value) => setFirstName(value)}
-                                />
-                            </View>
-
-                            <View style={styles.firstContainer}>
-                                <Text style={styles.labelText}>Last Name</Text>
-                                <TextInput 
-                                    style={ styles.inputContainer }
-                                    value={lastName}
-                                    onChangeText={(value) => {
-                                        setErrorMessage('')
-                                        setLastName(value)
-                                    }}
-                                />
-                            </View>
-                        </View>
-
-                        <View style={styles.fullWidthContainer}>
-                            <Text style={styles.labelText}>Cellphone</Text>
-                            <TextInput 
-                                style={ styles.inputContainer }
-                                value={ cell }
-                                onChangeText={(value) => {
-                                    setErrorMessage('')
-                                    setCell(value)
-                                }}
-                            />
-                        </View>
-
-                        <View style={styles.fullWidthContainer}>
-                            <Text style={styles.labelText}>Email</Text>
-                            <TextInput 
-                                style={ styles.inputContainer }
-                                value={ email }
-                                onChangeText={(value) => {
-                                    setErrorMessage('')
-                                    setEmail(value)
-                                }}
-                            />
-                        </View>
-
-                        <View style={styles.fullWidthContainer}>
-                            <Text style={styles.labelText}>Authorization Level</Text>
-                            <TextInput 
-                                style={ styles.inputContainer }
-                                value={ authLevel.toString() }
-                                onChangeText={(value) =>  processAuthLevel }
-                            />
-                        </View>
-                        
-                        { myProfile && (
-                            <View>
-                                <CustomButton 
-                                    color={ CustomColors.white }
-                                    passedFunction={ saveChanges }
-                                >
-                                    Save
-                                </CustomButton>
-
-                                <OutlineButton 
-                                    passedOnFunction={() => navigation.goBack()}
-                                    color={ CustomColors.white }
-                                >
-                                    Cancel
-                                </OutlineButton>
-                            </View>
-                        )}
-                       
-
+                        <FlatList 
+                            data={ ipsScores }
+                            keyExtractor={(item) => item.id}
+                            renderItem={({ item }) => {
+                                return (
+                                    <ScoreItem gameScoreData={ item } />
+                                )
+                            }}
+                        />
                     </View>
- 
 
-            </KeyboardAvoidingView>
+                    <View style={styles.listContainer}>
+                        <Text style={ styles.gameTypeHeader }>
+                            Medal Games: 
+                        </Text>
+
+                        <FlatList 
+                            data={ medalScores }
+                            keyExtractor={(item) => item.id}
+                            renderItem={({ item }) => {
+                                return (
+                                    <ScoreItem gameScoreData={ item } />
+                                )
+                            }}
+                        />
+                    </View>
+                </View>
+            </View>
         </ImageBackground>
     )
 }
@@ -209,87 +156,33 @@ const styles = StyleSheet.create({
     bgImage: {
         flex: 1,
         alignSelf: 'stretch',
-        width: '100%',
-        height: '100%',
     },
     container: {
-        flex: 1,
+        width: '100%',
+        height: '100%',
         padding: 16,
-        justifyContent: 'center',   
+        justifyContent: 'flex-start',   
         alignItems: 'center',
     },
     errorMessageText: {
+        width: '90%',
         color: CustomColors.error500,
         fontSize: 20,
         fontWeight: 'bold',
-    },
-    golferDataContainer: {
-        // flex: 1,
-        paddingVertical: 10,
-        justifyContent: 'center',   
-        alignItems: 'center',
-        //paddingHorizontal: 20,
-    },
-
-    golferImgContainer: {
-        marginTop: 12,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
+        borderColor: CustomColors.error500,
+        borderWidth: 1,
         padding: 8,
-        borderColor: CustomColors.white,
-        borderWidth: 2,
-        borderRadius: 30,
-        width: '100%',
-        height: '35%',
+        textAlign: 'center',
     },
     golferImage: {
-        width: '50%',
-        borderRadius:16,
+        width: '38%',
+        height: '20%',
+        borderRadius: 135,
     },
-
-
-
-
-
-
-
-    //
-    fullNameContainer: {
-        width: '100%',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginVertical: 16,
-    },
-    labelText: {
-        width: '100%',
-        textAlign: 'left',
-        color: CustomColors.white,
-        fontSize: 16,
-        paddingLeft: 12,
-    },
-    firstContainer: {
-        width: '45%',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        marginHorizontal: 8,
-    },
-
-
-    fullWidthContainer: {
-        width: '100%',
-        //borderColor: 'red',
-        //borderWidth: 1,
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start',
-        //paddingLeft: 12,
-        marginBottom: 20,
-    },
-
-    inputContainer: {
+    nameText: {
         backgroundColor: CustomColors.blue050,
-        width: '92%',
+        textAlign: 'center',
+        width: '50%',
         paddingHorizontal: 12,
         paddingVertical: 2,
         marginTop: 4,
@@ -301,26 +194,30 @@ const styles = StyleSheet.create({
         borderColor: CustomColors.white,
         borderWidth: 1,
     },
-
-    otherContainer: {
-        width: '50%',
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
+    gameGoupWrapper: {
+        justifyContent: 'flex-start',
         alignItems: 'center',
+        width: '100%',
+        marginTop: 16,
+        opacity: 0.85,
+        //borderColor: 'red',
+        //borderWidth: 1,
     },
-    otherText: {
+    gameTypeHeader : {
+        backgroundColor: CustomColors.blue050,
+        textAlign: 'left',
+        width: '40%',
+        paddingHorizontal: 12,
+        paddingVertical: 2,
+        color: CustomColors.gray800,
         fontSize: 16,
-        fontWeight: '600',
-        color: CustomColors.blue100,
+        fontWeight: '800',
+        borderRadius: 4,
+        borderColor: CustomColors.white,
+        borderWidth: 2,
     },
-    notLoggedInContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    notLoggedInText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: CustomColors.error500,
+    listContainer: {
+        width: '100%',
+        marginBottom: 36,
     },
 })

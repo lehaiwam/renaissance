@@ -2,8 +2,6 @@ import React from 'react'
 import {  } from 'react-native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
-import { AuthContext } from '../util/auth-context'
-
 // import all the screens
 import HomeScreen from '../screens/home/HomeScreen'
 import MyProfileScreen from '../screens/home/MyProfileScreen'
@@ -12,13 +10,11 @@ import CalendarScreen from '../screens/home/CalendarScreen'
 import ConfirmationsScreen from '../screens/home/ConfirmationsScreen'
 import MigsDetailsScreen from '../screens/home/MigsDetailsScreen'
 import UpdateProfilePictureScreen from '../screens/home/UpdateProfilePictureScreen'
+import { CustomColors } from '../constants/CustomColors'
 
 const Stack = createNativeStackNavigator()
 
 const HomeNavigator = () => {
-
-   // const authCtx = useContext(AuthContext)
-
     return (
         <Stack.Navigator
             initialRouteName="HomeNavigator"
@@ -38,6 +34,9 @@ const HomeNavigator = () => {
                 component={MyProfileScreen} 
                 options={{
                     title: 'My Profile',
+                    headerStyle: {
+                        backgroundColor: CustomColors.blue050,
+                    },
                 }}
             />
             <Stack.Screen 
@@ -45,6 +44,9 @@ const HomeNavigator = () => {
                 component={ UpdateProfilePictureScreen } 
                 options={{
                     title: 'Update Profile Picture',
+                    headerStyle: {
+                        backgroundColor: CustomColors.blue050,
+                    },
                 }}
             />
             <Stack.Screen 
@@ -52,6 +54,9 @@ const HomeNavigator = () => {
                 component={MigsScreen} 
                 options={{
                     title: 'MIGS',
+                    headerStyle: {
+                        backgroundColor: CustomColors.blue050,
+                    },
                 }}
             />
             <Stack.Screen 
@@ -59,6 +64,9 @@ const HomeNavigator = () => {
                 component={CalendarScreen} 
                 options={{
                     title: 'Calendar',
+                    headerStyle: {
+                        backgroundColor: CustomColors.blue050,
+                    },
                 }}
             />   
             <Stack.Screen 
@@ -66,6 +74,9 @@ const HomeNavigator = () => {
                 component={ConfirmationsScreen} 
                 options={{
                     title: 'Confirmations',
+                    headerStyle: {
+                        backgroundColor: CustomColors.blue050,
+                    },
                 }}
             /> 
             <Stack.Screen 
@@ -73,6 +84,9 @@ const HomeNavigator = () => {
                 component={MigsDetailsScreen} 
                 options={{
                     title: 'MIGS Details',
+                    headerStyle: {
+                        backgroundColor: CustomColors.blue050,
+                    },
                 }}
             /> 
         </Stack.Navigator>
