@@ -33,9 +33,7 @@ const ConfirmModal = ({ confirmActionModal, setConfirmActionModal, userId, game 
         getCurrentConfirmedStatus()
     }, [])
 
-
     const toggleConfirmedStatus = async () => { 
-
         try {
             await updateDoc( doc( db, game.title, userId ), {
                 confirmed: !currConfirmedStatus,
@@ -49,10 +47,8 @@ const ConfirmModal = ({ confirmActionModal, setConfirmActionModal, userId, game 
             console.log('Failed updateDoc() confirmed : ', error)
             setConfirmActionModal(false)
         }  
-
     }
    
-
     return (
         <Modal  
             visible={ confirmActionModal } 
@@ -116,7 +112,6 @@ const ConfirmModal = ({ confirmActionModal, setConfirmActionModal, userId, game 
         </Modal>
     )
 }
-
 
 const styles = StyleSheet.create({
     centeredModal: {

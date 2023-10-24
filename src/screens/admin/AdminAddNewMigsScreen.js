@@ -3,7 +3,7 @@ import { ImageBackground, ScrollView, KeyboardAvoidingView,
          StyleSheet, Text, View, TextInput, Image } from 'react-native'
 
 import {db} from '../../firebaseConfig'
-import { doc, updateDoc } from "firebase/firestore"
+import { collection, addDoc } from "firebase/firestore"
 
 import { AuthContext } from '../../util/auth-context'
 
@@ -16,8 +16,8 @@ const MEMBER = 1
 const OFFICIAL = 2
 const ADMINISTRATOR = 3
 
-const AdminMigsDetailsScreen = ({navigation, route}) => {
-    //const { member} = route.params
+const AdminAddNewMigssScreen = ({navigation, route}) => {
+    // const { member} = route.params
     const bgImage = require('../../images/login_background.jpeg')
     const defaultGolferImageUrl = require('../../images/human.png')
     const authCtx = useContext(AuthContext);
@@ -29,38 +29,40 @@ const AdminMigsDetailsScreen = ({navigation, route}) => {
     const [cell, setCell] = useState('')
     const [email, setEmail] = useState('')
     const [authLevel, setAuthLevel] = useState('')
-    const [registered, setRegistered] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
 
-    useEffect(() => {
-        const { member } = route.params
-        setId(member.id)
-        setImageUrl(member.imageUrl)
-        setFirstName(member.firstName)
-        setLastName(member.lastName)
-        setCell(member.cell)
-        setEmail(member.email)
-        setAuthLevel(member.authLevel)
-        setRegistered(member.registered)
-        setErrorMessage('')
-    }, [])
+    useEffect(() => { 
+        setId('')
+        setImageUrl('')
+        setFirstName('')
+        setLastName('')
+        setCell('')
+        setEmail('')
+        setAuthLevel('')
+        setErrorMessage('')           
 
+    }, [])
 
     const saveChanges = async () => {
         try {
-            const migsRef = doc(db, "migs", id);
-            await updateDoc(migsRef, { 
+            const migsRef = collection(db, "migs")
+            const docRef = await addDoc(migsRef, { 
                 firstName: firstName,
                 lastName: lastName,
                 email: email,
                 cell: cell,
                 authLevel: authLevel,
+                imageUrl: '',
+                cellVerified: false,
+                emailVerified: false,
+                registered: false,
             })
+            console.log('Successfully added new MIGS record, id : ', docRef.id)
+
         } catch (error) {
-            console.log('Error on MIGS updateDoc(): ', error) 
+            console.log('Error on MIGS setDoc(): ', error) 
         }
-    
-        // console.log('Successfully updated this MIGS record: ', lastName)
+
         navigation.navigate('AdminMigs')
     }
 
@@ -74,49 +76,39 @@ const AdminMigsDetailsScreen = ({navigation, route}) => {
         )
     }
 
-    return (
-        <ImageBackground style={styles.bgImage} source={ bgImage }>
-            <View style={styles.keypadContainer} >
-           
-            <KeyboardAvoidingView  
-                style={styles.container}
+    return ( 
+
+            <KeyboardAvoidingView 
+                style={styles.container} 
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            >   
-                { errorMessage &&  <Text style={styles.errorTextMessage}>{errorMessage}</Text> }
+            >                
+                <View style={styles.displayWrapper}>
 
-                <View style={styles.scrollView} >
-
+                    { errorMessage &&  <Text style={styles.errorTextMessage}>{errorMessage}</Text> }
                     <View style={styles.golferImgContainer}>
-                        { !imageUrl  &&
-                            <Image
-                                style={styles.golferImage}
-                                source={ defaultGolferImageUrl }
-                            />               
-                        }
-                        { imageUrl &&
-                            <Image
-                                style={styles.golferImage}
-                                source={{ uri: imageUrl }}
-                            />
-                        }
+                        <Image
+                            style={styles.golferImage}
+                            source={ defaultGolferImageUrl }
+                        />               
                     </View>
 
-                   
                     <View style={styles.fullNameContainer}>
-                        <View style={styles.halfWidthContainer}>
+                        <View style={styles.firstContainer}>
                             <Text style={styles.labelText}>First Name</Text>
                             <TextInput 
                                 style={ styles.inputContainer }
+                                placeholder='first name'
                                 value={firstName}
                                 onChangeText={(value) => setFirstName(value)}
                             />
                         </View>
 
-                        <View style={styles.halfWidthContainer}>
+                        <View style={styles.firstContainer}>
                             <Text style={styles.labelText}>Last Name</Text>
                             <TextInput 
                                 style={ styles.inputContainer }
                                 value={lastName}
+                                placeholder='last name'
                                 onChangeText={(value) => {
                                     setErrorMessage('')
                                     setLastName(value)
@@ -130,6 +122,7 @@ const AdminMigsDetailsScreen = ({navigation, route}) => {
                         <TextInput 
                             style={ styles.inputContainer }
                             value={ cell }
+                            placeholder='cellphone'
                             onChangeText={(value) => {
                                 setErrorMessage('')
                                 setCell(value)
@@ -137,16 +130,12 @@ const AdminMigsDetailsScreen = ({navigation, route}) => {
                         />
                     </View>
 
-                    
                     <View style={styles.fullWidthContainer}>
-                        
-
-
-
                         <Text style={styles.labelText}>Email</Text>
                         <TextInput 
-                            style={ [styles.inputContainer, registered && styles.inactive ]}
+                            style={ styles.inputEmail }
                             value={ email }
+                            placeholder='email'
                             onChangeText={(value) => {
                                 setErrorMessage('')
                                 setEmail(value)
@@ -158,14 +147,14 @@ const AdminMigsDetailsScreen = ({navigation, route}) => {
                         <Text style={styles.labelText}>Authorization Level</Text>
                         <TextInput 
                             style={ styles.inputContainer }
-                            value={ authLevel }
+                            placeholder='auth-level, 1 or 2'
+                            value={ authLevel }                           
                             onChangeText={(value) => {
                                 setErrorMessage('')
                                 setAuthLevel(value)
                             }}
                         />
                     </View>
-                   
 
                     <CustomButton 
                         color={ CustomColors.white }
@@ -184,14 +173,12 @@ const AdminMigsDetailsScreen = ({navigation, route}) => {
                     </View>
 
                 </View>
-
             </KeyboardAvoidingView>
-            </View>
-        </ImageBackground>
+       
     )
 }
 
-export default AdminMigsDetailsScreen
+export default AdminAddNewMigssScreen
 
 const styles = StyleSheet.create({
     bgImage: {
@@ -200,57 +187,38 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
-    keypadContainer: {
+    container: {
+        backgroundColor: CustomColors.blue100,
         flex: 1,
-        width: '100%',
+        //paddingVertical: 10,
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+    },
+    displayWrapper: {
         justifyContent: 'center',   
         alignItems: 'center',
-    },
-    container: {
-        flex: 1,
         width: '100%',
-        justifyContent: 'flex-start',   
-        alignItems: 'center',
-        marginBottom: 80,  
-    },
-    errorMessageText: {
-        color: CustomColors.error500,
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-
-
-
-
-    scrollView: {
-        width: '100%',
-        height: '100%',
+        height: '88%',
+        //paddingVertical: 16,
         borderWidth: 1,
-        borderColor: 'cyan',
-        marginBottom: 12,
-        justifyContent: 'flex-center',   
-        alignItems: 'center',
-    },
-    contentContainer: {
-        justifyContent: 'flex-center',   
-        alignItems: 'center',
+        borderColor: CustomColors.white,
     },
     golferImgContainer: {
         justifyContent: 'center',
         alignItems: 'center',
         borderColor: CustomColors.white,
         borderWidth: 2,
-        borderRadius: 12,
-        width: '60%',
-        height: '36%',
-        marginBottom: 16,
+        borderRadius: 175,
+        width: '58%',
+        height: '32%',
     },
     golferImage: {
         width: '90%',
         height: '90%',
-        borderRadius: 40,
+        borderRadius: 250,
     },
-    //
+
     fullNameContainer: {
         width: '100%',
         flexDirection: 'row',
@@ -265,21 +233,20 @@ const styles = StyleSheet.create({
         fontSize: 16,
         paddingLeft: 12,
     },
-    halfWidthContainer: {
+    firstContainer: {
         width: '45%',
         justifyContent: 'flex-start',
         alignItems: 'center',
         marginHorizontal: 8,
     },
-    //
     fullWidthContainer: {
         width: '100%',
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
-        marginBottom: 12,
+        marginBottom: 16,
     },  
     inputContainer: {
-        backgroundColor: CustomColors.blue050,
+        backgroundColor: CustomColors.white,
         width: '92%',
         paddingHorizontal: 12,
         paddingVertical: 2,
@@ -291,9 +258,23 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         borderColor: CustomColors.white,
         borderWidth: 1,
+        textTransform: 'capitalize',
     },
-    inactive: {
-        backgroundColor: CustomColors.error100,
+    inputEmail: {
+        backgroundColor: CustomColors.white,
+        width: '92%',
+        paddingHorizontal: 12,
+        paddingVertical: 2,
+        marginTop: 4,
+        marginHorizontal: 12,
+        color: CustomColors.gray800,
+        fontSize: 16,
+        fontWeight: '600',
+        borderRadius: 4,
+        borderColor: CustomColors.white,
+        borderWidth: 1,
+        textTransform: 'lowercase',
+
     },
     outlineBtnContainer: {
         width: '90%',
@@ -306,5 +287,15 @@ const styles = StyleSheet.create({
         color: CustomColors.error500,
         fontSize: 20,
         fontWeight: 'bold',
+    },
+    notLoggedInContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    notLoggedInText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: CustomColors.error500,
     },
 })

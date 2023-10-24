@@ -2,14 +2,17 @@ import React, { useState } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 
-// import ConfirmModal from './ConfirmModal'
+import { updateGameScores } from '../../util/initialize-db-tables'
 import { CustomColors } from '../../constants/CustomColors'
 
-
 const AdminCalendarItem = ({ userId, game }) => {
-    // const [ confirmActionModal, setConfirmActionModal] = useState(false)
-
+    
     const navigation = useNavigation()
+
+    const captureGameScores = async () => {
+        updateGameScores(game.title)
+        navigation.goBack()
+    }
 
     return (
         
@@ -32,6 +35,19 @@ const AdminCalendarItem = ({ userId, game }) => {
                     </Text>
                 </Pressable>
             </View>
+
+            { (game.status > 3)  &&
+            
+                <View style={styles.captureButtonWrapper}>
+                    <Pressable 
+                        style={ ({pressed}) => [ styles.captureScoresButton, pressed && styles.pressed ]}
+                        onPress={ captureGameScores }>
+                        <Text style={styles.buttonText}>
+                            Capture Game Scores 
+                        </Text>
+                    </Pressable>
+                </View>
+            }
         </View>
     )
 }    
@@ -41,7 +57,6 @@ export default AdminCalendarItem
 const styles = StyleSheet.create({
     itemContainer: {
         width: '100%',
-        // height: '100%',
         backgroundColor: CustomColors.blue050,
         marginVertical: 8,
         borderColor: CustomColors.gray600,
@@ -115,6 +130,30 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '800',
         color: CustomColors.white,
+    },
+    captureButtonWrapper: {
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    captureScoresButton: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: CustomColors.gray800,
+        elevation: 1,
+        borderColor: CustomColors.white,
+        borderWidth: 1,
+        borderRadius: 28,
+        width: '80%',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+
+        /*
+        shadowColor: '#000000',
+        shadowOpacity: 0.2,
+        shadowOffset: {width:1, height: 1},
+        shadowRadius: 2,
+        */
     },
     pressed: {
         opacity: 0.5,

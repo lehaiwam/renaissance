@@ -3,7 +3,8 @@ import React from 'react'
 
 import { MaterialCommunityIcons} from '@expo/vector-icons'
 import { MaterialIcons } from '@expo/vector-icons'
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons'
+import { AntDesign } from '@expo/vector-icons'
 import { CustomColors } from '../../constants/CustomColors'
 
 const MenuItemButton = ({iconName, size, color, children, onPressItem}) => {
@@ -34,7 +35,13 @@ const MenuItemButton = ({iconName, size, color, children, onPressItem}) => {
                 (iconName === "database-refresh") &&  
                     <MaterialCommunityIcons name={iconName} size={size} color={color} />  
             }
-            <Text style={styles.text}>{children}</Text>
+            {
+                (iconName === "notification") &&  
+                    <AntDesign name={iconName} size={size} color={color} /> 
+            }
+            <Text style={styles.text}>
+                {children}
+            </Text>
         </Pressable>
     )
 }
@@ -42,7 +49,6 @@ const MenuItemButton = ({iconName, size, color, children, onPressItem}) => {
 export default MenuItemButton
 
 const styles = StyleSheet.create({
-
     button: {
         justifyContent: 'center',
         alignItems: 'center',
@@ -52,7 +58,7 @@ const styles = StyleSheet.create({
         borderColor: CustomColors.blue100,
         borderWidth: 2,
         borderRadius: 16,
-        width: 100,
+        width: 110,
         height: 60,
     },
     icon:{

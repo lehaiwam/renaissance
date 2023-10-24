@@ -21,11 +21,7 @@ const AdminHomeScreen = ({navigation}) => {
     const [errorMessage, setErrorMessage] = useState('')
     //const [authorization, setAuthorization] = useState(0)
 
-    console.log('\n\n   AUTHLEVEL: ', authCtx.authLevel)
-
-    
-
-    if ( authCtx.authLevel <= MEMBER ) {
+    if ( authCtx.authLevel < OFFICIAL ) {
         return (
             <ImageBackground style={styles.bgImage} source={ bgImage }>
                 <SafeAreaView style={styles.notAuthorizedWrapper}>
@@ -58,7 +54,7 @@ const AdminHomeScreen = ({navigation}) => {
                     <MenuItemButton 
                         iconName={'md-people-circle-outline'} 
                         size={24} 
-                        color={CustomColors.blue050}
+                        color={CustomColors.green1000}
                         onPressItem={ () => navigation.navigate('AdminMigs') }
                     > 
                         MIGS
@@ -67,7 +63,7 @@ const AdminHomeScreen = ({navigation}) => {
                     <MenuItemButton 
                         iconName={'calendar-month'} 
                         size={24} 
-                        color={CustomColors.blue050}
+                        color={CustomColors.green1000}
                         onPressItem={ () => navigation.navigate('AdminCalendar') }
                     > 
                         Calendar
@@ -78,7 +74,7 @@ const AdminHomeScreen = ({navigation}) => {
                         <MenuItemButton 
                             iconName={'database-refresh'} 
                             size={24} 
-                            color={CustomColors.blue050}
+                            color={CustomColors.green1000}
                             onPressItem={ () => setShowModal(true) }
                         > 
                             Initialize DB
@@ -108,7 +104,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
     },
     header: {
-        color: CustomColors.gray600,
+        color: CustomColors.white,
         fontSize: 32,
         fontWeight: 'bold',
         marginBottom: 12,

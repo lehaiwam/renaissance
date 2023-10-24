@@ -147,7 +147,6 @@ const AdminGameDetailsScreen = ({navigation, route}) => {
         navigation.navigate('AdminCalendar')
     }
 
-    
     return (
         <ImageBackground style={styles.bgImage} source={ bgImage }>
 
@@ -164,7 +163,14 @@ const AdminGameDetailsScreen = ({navigation, route}) => {
                     />
                 </View>
         
-                <Text style={styles.title}>{title.toUpperCase()}</Text>
+                <Text 
+                    style={styles.title}>
+                    { (title === 'coc') ? 'Champ Of Champs' : title.toUpperCase() }
+                </Text>
+
+                {  (title === 'coc') &&  <Text style={styles.gameFormatText}>(Stableford)</Text> } 
+
+                {  (title === 'tubs-memorial') &&  <Text style={styles.gameFormatText}>(Medal)</Text> } 
 
                 <View style={styles.fullWidthContainer}>
                     { showTimeModal && (
@@ -317,6 +323,7 @@ const AdminGameDetailsScreen = ({navigation, route}) => {
                         Cancel
                     </OutlineButton>
                 </View>
+
             </KeyboardAvoidingView>
         </ImageBackground>
     )
@@ -348,7 +355,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderRadius: 30,
         width: '100%',
-        height: '25%',
+        height: '24%',
     },
     groupImage: {
         alignSelf: 'center',
@@ -363,6 +370,12 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         textTransform: 'uppercase',
+    },
+    gameFormatText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        textTransform: 'capitalize',
+        color: CustomColors.primary500
     },
     //
     fullWidthContainer: {

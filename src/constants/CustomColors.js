@@ -14,7 +14,10 @@ export const CustomColors = {
     blue050: '#c8d3e5',
     buttonCustom: '#0000ff',
     buttonOutline: 'transparent',
-    green800: '#1ff707',
+    cyan1000: '#00FFFF',
+
+    green1000: '#1ff707',
+    green500: '#3b9a30',
     purple100: '#d5c5e4',
     purple600: '#953ce9',
     orange600: '#f46435',
@@ -24,4 +27,5 @@ export const CustomColors = {
     primary800: '#610440',
     error100: '#f46b6b',
     error500: '#f10b0b',
+
   }

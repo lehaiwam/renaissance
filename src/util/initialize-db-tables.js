@@ -1,5 +1,5 @@
 import { db } from '../firebaseConfig'
-import { collection, doc, setDoc, query, getDocs } from "firebase/firestore"; 
+import { collection, doc, setDoc, query, getDocs, getDoc } from "firebase/firestore"; 
 
 export const createDbTables = async (newTable) => {
     
@@ -32,12 +32,10 @@ export const createDbTables = async (newTable) => {
 
     // create a record for each golfer in each of the competition games table
     tablesArray.forEach( (tab) => {
-        let initScore
-        if (tab.slice(0,3) === 'med' || tab.slice(0,3) === 'tub') {
+        let initScore = 0
+        if (tab.slice(0,3) === 'med' || tab.slice(0,3) === 'coc') {
             initScore = 200
-        } else {
-            initScore = 0
-        }
+        } 
         console.log('\n   Creating table : ', tab, ", InitScore: ", initScore )
       
         const newTableRef = collection(db, tab)
@@ -83,6 +81,7 @@ export const createDbTables = async (newTable) => {
     })
     console.log("\n     Done with all-scores table!!!")
 }
+
 
 //
 import { storage } from '../firebaseConfig'
@@ -142,4 +141,125 @@ export const uploadProfileImage = async (imageFile, newFileName) => {
         }
     )
     console.log('\n  Exiting uploadProfileImage()')
+}
+
+
+//
+import { MedalOne, MedalTwo, MedalThree, MedalFour, MedalFive, MedalSix, MedalSeven, MedalEight,} from '../data/Scores'
+
+import { IpsOne, IpsTwo, IpsThree, IpsFour, TubsMemorial, ChampOfChamps } from '../data/Scores'
+
+
+const GamesDataDefs = [
+    { title: 'medal-1', data: MedalOne },
+    { title: 'medal-2', data: MedalTwo }, 
+    { title: 'medal-3', data: MedalThree },
+    { title: 'medal-4', data: MedalFour }, 
+    { title: 'medal-5', data: MedalFive },
+    { title: 'medal-6', data: MedalSix }, 
+    { title: 'medal-7', data: MedalSeven },
+    { title: 'medal-8', data: MedalEight }, 
+    { title: 'ips-1', data: IpsOne },
+    { title: 'ips-2', data: IpsTwo }, 
+    { title: 'ips-3', data: IpsThree },
+    { title: 'ips-4', data: IpsFour }, 
+    { title: 'coc',  data: 'ChampOfChamps'},
+    { title: 'tubs-memorial', data: 'TubsMemorial'},
+]
+
+
+
+export const updateGameScores = async ( inputTitle ) => {
+
+    console.log('\n  updateGameScores() - Updating game scores for...', inputTitle)
+
+    let gameData
+    GamesDataDefs.map((item) => {
+        if (item.title === inputTitle) {
+            item.data.map((golfer) => {
+
+                console.log( golfer.id, golfer.name, golfer.score)
+
+                const nameArr = golfer.name.split(' ')
+                const fname = nameArr[0]
+                const lname= nameArr[1]
+                let confirmationFlag = false
+        
+                if (golfer.score !== 0 && golfer.score !== 200) {
+                    confirmationFlag = true
+                }
+
+                const titleCollectionRef = doc(db, inputTitle, golfer.id);
+                
+                setDoc(titleCollectionRef, 
+                    { 
+                        firstName: fname, 
+                        lastName: lname,
+                        score: golfer.score,
+                        confirmed: confirmationFlag,
+                    }, 
+                    { 
+                        merge: true 
+                    });
+                 
+                /********* CORRECT UP TO HERE ....  */
+
+
+                console.log('\n   Hivi sasa kuunda ALL-SCORES rekodi... ', golfer.name)
+                console.log('\n   Right now creating ALL-SCORES record... ', golfer.name)
+                // update the all-scores table as well
+                let arrayTempScores = []
+                let defaultScore = 0
+                if (inputTitle.slice(0,3) === 'med' || inputTitle.slice(0,3) === 'coc') {
+                    defaultScore = 200
+                }
+
+                // read all-start record first
+                const docRef = doc(db, "all-scores", golfer.id)
+                getDoc(docRef)
+                .then( (docSnap) => {
+                    if (docSnap.exists()) {
+                        //console.log("Document data:", docSnap.data().firstName, docSnap.data().scores)
+                        let arrayTempScores = [...docSnap.data().scores]
+
+                        if (golfer.id === 'NonA5roGtn0A9n5RFyWs') { 
+                            console.log('\n   Before Image: ', arrayTempScores)
+                        }
+                        
+                        for ( let i=0; i<arrayTempScores.length; i++ ){
+                            if (arrayTempScores[i].title === inputTitle) {
+                                arrayTempScores[i].score = golfer.score
+                            }
+                        }
+
+                        if (golfer.id === 'NonA5roGtn0A9n5RFyWs') { 
+                            console.log('\n   After Image: ', arrayTempScores)
+                        }
+                        
+                    
+                        setDoc(docRef, 
+                            { 
+                                scores: arrayTempScores,
+                            }, 
+                            { 
+                                merge: true 
+                            });
+                    
+
+                    } else {
+                        // docSnap.data() will be undefined in this case
+                        console.log("No such document!");
+                    }
+                })
+                .catch( (err) => {
+                    console.log('Error from getDoc() all-scores collection: ', err)
+                })
+
+                console.log('\n   Nimekamilisha kuunda ALL-SCORES rekodi! ')
+                console.log('\n   I have completed creating ALL-SCORES record! ')
+                console.log('... updated: ',  golfer.name)
+            })
+        }
+    })
+
 }

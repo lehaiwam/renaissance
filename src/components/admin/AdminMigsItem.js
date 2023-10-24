@@ -47,17 +47,17 @@ const AdminMigsItem = ({ member }) => {
 
             <View style={styles.actions}>
                 <Pressable
-                    style={ ({pressed}) => [ styles.button, pressed && styles.pressed ]}
+                    style={ ({pressed}) => [ styles.button, styles.editButton, pressed && styles.pressed ]}
                     onPress={ () => navigation.navigate('AdminMigsDetails', { member: member }) }>
-                    <MaterialCommunityIcons name="account-edit-outline" size={16} color="black" />
-                    <Text>Edit</Text>
+                    <MaterialCommunityIcons name="account-edit-outline" size={20} color="white" />
+                    <Text style={styles.buttonText}>Edit</Text>
                 </Pressable>
 
                 <Pressable 
-                    style={ ({pressed}) => [ styles.button, pressed && styles.pressed ]}
+                    style={ ({pressed}) => [ styles.button, styles.deleteButton, pressed && styles.pressed ]}
                     onPress={ () => setConfirmActionModal(true) }>
-                    <MaterialIcons name="delete-outline" size={16} color="black" />
-                    <Text>Delete</Text>
+                    <MaterialIcons name="delete-outline" size={20} color="white" />
+                    <Text style={styles.buttonText}>Delete</Text>
                 </Pressable>  
             </View>
 
@@ -70,11 +70,11 @@ export default AdminMigsItem
 const styles = StyleSheet.create({
     itemContainer: {
         width: '100%',
-        backgroundColor: CustomColors.blue050,
+        backgroundColor: CustomColors.blue100,
         marginVertical: 8,
         borderColor: CustomColors.white,
         borderWidth: 2,
-        borderRadius: 24,
+        borderRadius: 20,
         padding: 4,
     },
     name: {
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
     },
     nameText: {
-        fontSize: 16,
+        fontSize: 20,
         fontWeight: 'bold',
     },
     metaData: {
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
         marginVertical: 4,
         paddingHorizontal: 8,
     },
-    button:{
+    editButton:{
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
@@ -108,13 +108,36 @@ const styles = StyleSheet.create({
         width: '25%',
         paddingHorizontal: 8,
         paddingVertical: 4,
-
         /*
         shadowColor: '#000000',
         shadowOpacity: 0.2,
         shadowOffset: {width:1, height: 1},
         shadowRadius: 2,
         */
+    },
+    button: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        elevation: 1,
+        borderColor: CustomColors.white,
+        borderWidth: 2,
+        borderRadius: 28,
+        width: '30%',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        /*
+        shadowColor: '#000000',
+        shadowOpacity: 0.2,
+        shadowOffset: {width:1, height: 1},
+        shadowRadius: 2,
+        */
+    },
+    editButton:{
+        backgroundColor: CustomColors.blue600,
+    },
+    deleteButton:{
+        backgroundColor: CustomColors.error500,
     },
     buttonText: {
         textAlign: 'center',
@@ -123,6 +146,6 @@ const styles = StyleSheet.create({
         color: CustomColors.white,
     },
     pressed: {
-        opacity: 0.5,
+        opacity: 0.6,
     },    
 })

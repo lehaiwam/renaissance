@@ -41,9 +41,7 @@ const ResultsModal = ({ resultsModal, setResultsModal, game }) => {
             }
             setGameScores(scoresArray)
         }
-
         getGameScores()
-
     }, [])
 
     return (

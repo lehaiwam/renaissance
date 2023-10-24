@@ -2,21 +2,18 @@ import React from 'react'
 import {  } from 'react-native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
-import { AuthContext } from '../util/auth-context'
-
 // import all the screens
-import CompetitionsHomeScreen from '../screens/home/CompetitionsHomeScreen'
-import MedalScreen from '../screens/home/MedalScreen'
-import StablefordScreen from '../screens/home/StablefordScreen'
-import ChampOfChampsScreen from '../screens/home/ChampOfChampsScreen'
-import TubsMemorialScreen from '../screens/home/TubsMemorialScreen'
+import CompetitionsHomeScreen from '../screens/competitions/CompetitionsHomeScreen'
+import MedalScreen from '../screens/competitions/MedalScreen'
+import StablefordScreen from '../screens/competitions/StablefordScreen'
+import ChampOfChampsScreen from '../screens/competitions/ChampOfChampsScreen'
+import TubsMemorialScreen from '../screens/competitions/TubsMemorialScreen'
+import LogStandingsScreen from '../screens/competitions/LogStandingsScreen'
 import { CustomColors } from '../constants/CustomColors'
 
 const Stack = createNativeStackNavigator()
 
 const CompetitionsNavigator = () => {
-
-   // const authCtx = useContext(AuthContext)
 
     return (
         <Stack.Navigator
@@ -72,7 +69,17 @@ const CompetitionsNavigator = () => {
                     },
                 }}
             />   
-    
+            <Stack.Screen 
+                name="LogStandings" 
+                component={ LogStandingsScreen } 
+                options={{
+                    title: 'Current Log Standings',
+                    headerStyle: {
+                        backgroundColor: CustomColors.blue050,
+                    },
+                }}
+            />   
+
         </Stack.Navigator>
     )
 }

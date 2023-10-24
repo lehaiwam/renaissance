@@ -36,7 +36,7 @@ const CalendarScreen = ({ navigation, route }) => {
                         date: new Date(newDate).toDateString(),
                         title: doc.data().title,
                         course: doc.data().course,
-                        fees: doc.data()?.fees > 0 ? doc.data().fees : 0,
+                        fees: doc.data().fees,
                         status:  doc.data().status,
                         weekendAway: doc.data().weekendAway,
                         tops: doc.data().uniform?.tops.length ? doc.data().uniform.tops : '',

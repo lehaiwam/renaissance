@@ -83,7 +83,7 @@ const HomeNavigator = () => {
                 name="MigsDetails" 
                 component={MigsDetailsScreen} 
                 options={{
-                    title: 'MIGS Details',
+                    title: 'Golfer Competitions Scores',
                     headerStyle: {
                         backgroundColor: CustomColors.blue050,
                     },

@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
         fontWeight: '800',
     }, 
     gameScoreGreen: {
-        backgroundColor: CustomColors.green800,
+        backgroundColor: CustomColors.green1000,
     },
     gameScoreYellow: {
         backgroundColor: CustomColors.yellow500,
@@ -98,6 +98,6 @@ const styles = StyleSheet.create({
     },
     gameScoreNotplayed : {
         backgroundColor: CustomColors.gray100,
-        color: CustomColors.gray100,
+        //color: CustomColors.gray100,
     }
 })

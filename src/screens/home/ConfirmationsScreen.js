@@ -18,7 +18,6 @@ const ConfirmationsScreen = ({navigation, route}) => {
     const authCtx = useContext(AuthContext);
     // const userId = authCtx.id
     const {game, userId} = route.params
-    console.log('Confirmations for this game: ', game.title, ', this userId: ', userId)
 
     let counter=0
     const [confirmActionModal, setConfirmActionModal] = useState(false)
@@ -28,7 +27,6 @@ const ConfirmationsScreen = ({navigation, route}) => {
 
     // useEffect() to load all confirmed golfers for a specific game
     useEffect(() => {
-        console.log('UseEffect() loading confimations')
         const getConfirmations = async() => {
             const tempArray = []
             const q = query(collection(db, game.title), where("confirmed", "==", true))
@@ -41,7 +39,7 @@ const ConfirmationsScreen = ({navigation, route}) => {
             } else {
                 querySnapshot.forEach((doc) => {
                     // doc.data() is never undefined for query doc snapshots
-                    console.log(doc.id, " => ", doc.data())
+                    // console.log(doc.id, " => ", doc.data())
                     tempArray.push({
                         id: doc.id, 
                         firstName: doc.data().firstName,
@@ -52,17 +50,14 @@ const ConfirmationsScreen = ({navigation, route}) => {
             }
             setIsLoading(false)             
         }    
-
         setIsLoading(true)
         getConfirmations()
-
     }, [])
 
     const createAndSendList = () => {
         console.log('Creating a confirmation HTML document...')
         sendConfirmationsList(game, confirmations)
     }
-
 
     if (isLoading) {
         return (
@@ -72,7 +67,6 @@ const ConfirmationsScreen = ({navigation, route}) => {
     
     return (
         <ImageBackground style={styles.bgImage} source={ bgImage }>
-
             <ConfirmModal 
                 confirmActionModal={ confirmActionModal }
                 setConfirmActionModal={ setConfirmActionModal }
@@ -127,8 +121,7 @@ const ConfirmationsScreen = ({navigation, route}) => {
                         <Text  style={styles.buttonText}>Click here</Text>
                     </Pressable>
                 </View>
-            </View>
-            
+            </View>   
         </ImageBackground>
     )
 }

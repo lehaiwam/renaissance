@@ -42,11 +42,9 @@ const CompetitionsHomeScreen = ({ navigation, route }) => {
                 > 
                     <Text style={styles.menuText} >Champ Of Champs</Text>
                 </Pressable>
-
             </View>
         </ImageBackground>   
     )
-
 }
 
 export default CompetitionsHomeScreen

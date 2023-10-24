@@ -31,17 +31,11 @@ const CalendarItem = ({ userId, game }) => {
                 </Text>
             </View>
 
-
-
-
-
-
-
             <View style={styles.bottomText}>
                 <Text style={[styles.baseText, styles.courseText]} > {game.course} </Text>
                 <Text 
                     style={[styles.baseText, styles.courseText]} >
-                     R {game.fees}
+                        {game.fees}
                 </Text>
                 <Text style={[styles.baseText, styles.weekendText]}>
                     Away? { (game.weekendAway) ? 

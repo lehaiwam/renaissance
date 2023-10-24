@@ -3,7 +3,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { ImageBackground, StyleSheet, Text, View, ActivityIndicator } from 'react-native'
 
 import {db} from '../../firebaseConfig'
-import { collection, query, where, getDocs } from "firebase/firestore"
+import { collection, query, orderBy, getDocs } from "firebase/firestore"
 
 import { AuthContext } from '../../util/auth-context'
 
@@ -11,8 +11,7 @@ import LoadingOverlay from '../../components/UI/LoadingOverlay'
 import { CustomColors } from '../../constants/CustomColors'
 import AdminMigsList from '../../components/admin/AdminMigsList'
 
-import CustomButton from '../../components/UI/CustomButton'
-import OutlineButton from '../../components/UI/OutlineButton'
+import IconButton from '../../components/UI/IconButton'
 
 const AdminMigsScreen = ({navigation}) => {
     const MEMBER = 1
@@ -31,11 +30,31 @@ const AdminMigsScreen = ({navigation}) => {
     const isFocused = useIsFocused();
 
     useEffect(() => {
-                
+        // ADD addition button in the header....        
+        const showAddIcon = async () => {
+
+            navigation.setOptions({
+                title: 'MIGS Maintenance',
+                headerStyle: {
+                    backgroundColor: CustomColors.blue050,
+                },
+                headerRight: ({tintColor}) => {
+                    return (
+                        <IconButton 
+                            name={'person-add'}
+                            size={24}
+                            color={tintColor}
+                            onPressIcon={ () => navigation.navigate('AdminAddNewMigs') }
+                        />
+                    )
+                },
+            }) 
+        }
+
         // get all MIGS (Members In Good Standing)
         getAllMigs = async() => {
             const arrayMigs = []
-            const q = query(collection(db, "migs"))
+            const q = query(collection(db, "migs"), orderBy("firstName"),)
             const querySnapshot = await getDocs(q)
             if (querySnapshot.empty) {
                 console.log('Empty MIGS table? Impossible!!!')
@@ -43,7 +62,7 @@ const AdminMigsScreen = ({navigation}) => {
             } else {
                 querySnapshot.forEach(async (doc) => {
                     // doc.data() is never undefined for query doc snapshots
-                    console.log(doc.id, " => ", doc.data())
+                    //console.log(doc.id, " => ", doc.data().firstName, doc.data().lastName, )
                     arrayMigs.push({
                         id: doc.id, 
                         firstName: doc.data().firstName,
@@ -52,8 +71,8 @@ const AdminMigsScreen = ({navigation}) => {
                         cell: doc.data().cell,
                         authLevel:  doc.data().authLevel,
                         imageUrl: doc.data().imageUrl,
+                        registered: doc.data().registered,
                     })
-
                 })
                 setMigs(arrayMigs)
             }
@@ -61,6 +80,7 @@ const AdminMigsScreen = ({navigation}) => {
         }
 
         if (isFocused &&  authCtx.authUser) {
+            showAddIcon()
             setIsLoading(true)
             getAllMigs()
         }

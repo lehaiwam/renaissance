@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { ImageBackground, StyleSheet, Text, View, Alert, Button} from 'react-native'
+import { ImageBackground, StyleSheet, Text, View, Alert, Button, Pressable} from 'react-native'
 import { useIsFocused } from '@react-navigation/native'
 
 import { auth } from "../../firebaseConfig"
-import { signOut } from 'firebase/auth'
+import { signOut, sendEmailVerification } from 'firebase/auth'
+
 import { db } from '../../firebaseConfig'
-import { collection, query, where, getDocs } from "firebase/firestore"
+import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore"
 
 import { AuthContext } from '../../util/auth-context'
 
@@ -13,6 +14,7 @@ import { CustomColors } from '../../constants/CustomColors'
 import IconButton from '../../components/UI/IconButton'
 import MenuItemButton from '../../components/UI/MenuItemButton'
 import LoadingOverlay from '../../components/UI/LoadingOverlay'
+import { FontAwesome } from '@expo/vector-icons';
 
 const HomeScreen = ({ navigation, route }) => {
   const bgImage = require('../../images/skynews-tiger-woods-5283346.jpg')
@@ -23,6 +25,29 @@ const HomeScreen = ({ navigation, route }) => {
   const authCtx = useContext(AuthContext)
 
   const username = authCtx.authUser.email
+
+  // console.log('\n\n This email: ', authCtx.authUser.email, 'Verified?: ',   authCtx.authUser.emailVerified)
+
+  const sendVerificationEmail = () => {
+    //console.log('\n    Inside sendVerificationEmail() ')
+
+    if (auth) {
+      console.log('Sending Email Verification email...(actually not check code?)')
+      
+      /* UNCOMMENT THIS BEFOR LIVE
+      sendEmailVerification( auth.currentUser )
+          .then(() => {
+          // Email verification sent!
+          // ...
+          })
+          .catch((error) => {
+              Alert.alert('Email Verification Send Error!', error.message)
+              return
+          })
+      */
+
+    }
+  }
 
   const userSignOut = () => {
     signOut(auth)
@@ -55,6 +80,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     const showExitIcon = async () => {
+      let saveEmailVerified = false
       const q = query(collection(db, "migs"), where("email", "==", username))
       const querySnapshot = await getDocs(q)
       if (querySnapshot.empty) {
@@ -63,13 +89,30 @@ const HomeScreen = ({ navigation, route }) => {
           return
       } else {
           // update our context user data
-          querySnapshot.forEach((doc) => {
-              authCtx.id = doc.id,
-              authCtx.firstName = doc.data().firstName
-              authCtx.lastName = doc.data().lastName
-              authCtx.authLevel = doc.data().authLevel
+          querySnapshot.forEach((docu) => {
+              authCtx.id = docu.id,
+              authCtx.firstName = docu.data().firstName
+              authCtx.lastName = docu.data().lastName
+              authCtx.authLevel = docu.data().authLevel
+              saveEmailVerified = docu.data().emailVerified
           })
+
+          // Check if email is verified and 
+          if (authCtx.authUser.emailVerified) {
+            // If MIGS field not same as authorization system field, update
+            if (!saveEmailVerified) {
+              try {
+                const migsRef = doc(db, "migs", authCtx.id);
+                await updateDoc(migsRef, { 
+                    emailVerified: authCtx.authUser.emailVerified,
+                })
+              } catch (error) {
+                console.log('Error on MIGS updateDoc() : ', error) 
+              }
+            }
+          }
       }
+  
       setIsLoading(false)
     
       navigation.setOptions({
@@ -83,7 +126,7 @@ const HomeScreen = ({ navigation, route }) => {
         headerRight: ({tintColor}) => {
             return (
                 <IconButton 
-                    name={'exit-outline'}
+                    iconName={'exit-outline'}
                     size={24}
                     color={tintColor}
                     onPressIcon={ userLogout }
@@ -111,9 +154,13 @@ const HomeScreen = ({ navigation, route }) => {
   }
 
   return (
+  
       <ImageBackground style={styles.bgImage} source={ bgImage } resizeMode='cover'>
-          { errorMessage && <Text style={styles.errorMessageText}>{errorMessage}</Text> }
+   
           <View style={styles.container}>
+
+              { errorMessage && <Text style={styles.errorMessageText}>{errorMessage}</Text> }
+
               <MenuItemButton 
                 iconName={'md-person-circle-outline'} 
                 size={24} 
@@ -140,8 +187,20 @@ const HomeScreen = ({ navigation, route }) => {
               > 
                 Calendar
               </MenuItemButton> 
+
+              {(!authCtx.authUser.emailVerified) && (
+                  <View style={styles.verifyEmailMsgContainer}>
+                    <Text style={styles.verifyEmailMsgText}>Your email is NOT verified. Please click on the tick to verify your email</Text> 
+                    <Pressable onPress={ sendVerificationEmail } >
+                      <FontAwesome name="check-square-o" size={36} color={CustomColors.error500}/>
+                    </Pressable>
+                  </View>
+              )}
           </View>
+
+       
       </ImageBackground>   
+            
   )
 }
 
@@ -165,8 +224,27 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       paddingHorizontal: 16,
+      paddingTop: 40,
   },
   text: {
     color: CustomColors.gray800,
+  },
+  //
+  verifyEmailMsgContainer: {
+    //marginBottom: 144,
+    position: 'absolute',
+    bottom: 80,
+    left:10, 
+    right: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    
+  },
+  verifyEmailMsgText: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: CustomColors.error500,
+    textAlign: 'center',
+    marginBottom: 16,
   },
 })

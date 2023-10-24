@@ -103,12 +103,14 @@ const MyProfileScreen = ({navigation, route}) => {
         try {
             const migsRef = doc(db, "migs", id);
             await updateDoc(migsRef, { 
+                firstName: firstName,
+                lastName: lastName,
                 cell: cell,
             })
         } catch (error) {
             console.log('Error on MIGS updateDoc(): ', error) 
         }
-        navigation.navigate('Migs')
+        navigation.goBack()
     }
 
     if (isLoading) {
@@ -143,7 +145,6 @@ const MyProfileScreen = ({navigation, route}) => {
                                 source={ golferImage }     
                             />
                         } 
-                        
                         { imageUrl &&
                             <Image
                                 style={styles.golferImage}
@@ -189,8 +190,9 @@ const MyProfileScreen = ({navigation, route}) => {
                     <View style={styles.fullWidthContainer}>
                         <Text style={styles.labelText}>Email</Text>
                         <TextInput 
-                            style={ styles.inputContainer }
+                            style={ [styles.inputContainer, styles.inactive] }
                             value={ email }
+                            editable={false}
                             onChangeText={(value) => {
                                 setErrorMessage('')
                                 setEmail(value)
@@ -198,6 +200,32 @@ const MyProfileScreen = ({navigation, route}) => {
                         />
                     </View>
 
+                    { /*}
+                    { myProfile && (
+                    */}
+                    
+                    <View style={styles.actions}>
+                            <CustomButton 
+                                color={ CustomColors.white }
+                                passedFunction={ saveChanges }
+                            >
+                                Save
+                            </CustomButton>
+
+                            <View style={styles.outlineBtnContainer}>  
+                                <OutlineButton 
+                                    passedOnFunction={() => navigation.goBack()}
+                                    color={ CustomColors.white }
+                                >
+                                    Cancel
+                                </OutlineButton>
+                            </View>
+                    </View>
+
+                    {/*
+                    )}
+                    */}
+                    
                     <View style={styles.imgChangeAction}>
                         <Text style={styles.imgChangeText}>Wish to upload a new profile picture?</Text>
                         <Pressable
@@ -207,24 +235,6 @@ const MyProfileScreen = ({navigation, route}) => {
                             <Entypo name="upload" size={24} color="white" />
                         </Pressable>
                     </View>
-
-                    { myProfile && (
-                        <View>
-                            <CustomButton 
-                                color={ CustomColors.white }
-                                passedFunction={ saveChanges }
-                            >
-                                Save
-                            </CustomButton>
-
-                            <OutlineButton 
-                                passedOnFunction={() => navigation.goBack()}
-                                color={ CustomColors.white }
-                            >
-                                Cancel
-                            </OutlineButton>
-                        </View>
-                    )}
 
                 </View>
             </KeyboardAvoidingView>
@@ -273,8 +283,8 @@ const styles = StyleSheet.create({
         width: '90%',
     },
     golferImage: {
-        width: 200,
-        height: 200,
+        width: 150,
+        height: 150,
         borderRadius: 100,
     },
     imgChangeAction: {
@@ -282,7 +292,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         paddingHorizontal: 4,
-        marginTop: 16,
+        marginVertical: 16,
         //borderColor: 'green',
         //borderWidth: 1,
     },
@@ -353,5 +363,23 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         color: CustomColors.error500,
+    },
+    //
+    actions: {
+        width: '100%',
+        //flexDirection: "row",
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        marginVertical: 4,
+        paddingHorizontal: 8,
+    },
+    inactive: {
+        backgroundColor: CustomColors.error100,
+    },
+    outlineBtnContainer: {
+        width: '90%',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
     },
 })

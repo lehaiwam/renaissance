@@ -1,25 +1,20 @@
 import React from 'react'
-import { Image, StyleSheet, SafeAreaView, ScrollView, View, Text } from 'react-native'
+import { StyleSheet, SafeAreaView, ScrollView, View, Text } from 'react-native'
 
 import { CustomColors } from '../../constants/CustomColors'
+import { TubsMemorialChampionsData } from '../../data/Champions'
+import Slider from '../../components/competitions/Slider'
 
-const MedalScreen = ({navigation}) => {
-    const currentChampion = require('../../images/Tubs-Memorial-Champion-2022.jpg')
+const TubsMemorialScreen = ({navigation}) => {
+    
     return (
         <SafeAreaView style={styles.mainContainer}>
-
-            <Text style={styles.mainHeader} >Tubs Memorial Champion 2022</Text>
-
-            <View style={styles.imageContainer}>
-                <Image
-                    style={styles.golferImage}
-                    source={ currentChampion }
-                />               
+            <View 
+                style={styles.sliderContainer}>
+                <Slider sliderData={ TubsMemorialChampionsData }/>          
             </View>
 
-            <Text style={styles.championsName} >Charles Zanele Ngidi</Text>
-
-            <Text style={styles.subHeader}>Rules & Regulations</Text>
+            <Text style={styles.subHeader}>Competition Rules:</Text>
 
             <ScrollView 
                 style={styles.scrollView}
@@ -31,12 +26,12 @@ const MedalScreen = ({navigation}) => {
                                           
                 </Text>
                 <Text style={styles.paragraph}>
-                    The competition is in a medal format and is usually played at the end of our year long season. Each 
+                    The competition is in a MEDAL format and is usually played at the end of our year long season. Each 
                     participant is expected to contribute a bottle of 12 Year Old Whisky to the pool and the top five 
                     golfers on the day get to share the bottles.  
                 </Text>
                 <Text style={[styles.paragraph, styles.winnerText]}>
-                    The golfer with least score is declared our championship golfer of the year.  
+                    The golfer with the LEAST score on the day is declared our championships champion golfer for that year.  
                 </Text>
             </ScrollView>
         
@@ -44,62 +39,44 @@ const MedalScreen = ({navigation}) => {
     )
 }
 
-export default MedalScreen
+export default TubsMemorialScreen
 
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
-        backgroundColor: CustomColors.purple100,
+        backgroundColor: CustomColors.white,
         justifyContent: 'flex-start',
         alignItems: 'center',
-        paddingTop: 8,
+        //paddingTop: 8,
         paddingHorizontal: 16,
         paddingBottom: 64,
     },
-    mainHeader: {
-        //marginTop: 16,
+    sliderContainer: {
+        backgroundColor: CustomColors.blue050,
         width: '100%',
-        textAlign: 'center',
-        color: CustomColors.gray600,
-        fontSize: 24,
-        fontWeight: 'bold',
-    },
-    imageContainer: {
-        width: '90%',
         height: '30%',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         borderColor: CustomColors.blue400,
+        borderBottomWidth: 1,
+        borderRadius: 12,
         borderWidth: 2,
-        borderRadius: 24,
-        padding: 8,
-    },
-    golferImage: {
-        width: '100%',
-        height: '100%',
-        borderRadius: 20,
-    },
-    championsName: {
-        color: CustomColors.blue800,
-        width: '100%',
-        textAlign: 'center',
-        fontSize: 20,
-        fontWeight: 'bold',
+        marginTop: 4,
     },
     subHeader: {
         width: '100%',
         textAlign: 'left',
-        color: CustomColors.gray600,
+        color: CustomColors.gray1000,
         fontSize: 20,
         fontWeight: 'bold',
         marginTop: 12,
     },
     scrollView: {
-        height: '100%',
+        //height: '100%',
         width: '100%',
-        backgroundColor: CustomColors.white,
+        backgroundColor: CustomColors.blue050,
         width: '100%',
-        margin: 8,
+        marginBottom: 12,
         borderColor: CustomColors.blue400,
         borderWidth: 2,
         borderRadius: 12,

@@ -3,7 +3,7 @@ import { ImageBackground, StyleSheet, Text, View, ActivityIndicator } from 'reac
 import { useIsFocused } from '@react-navigation/native'
 
 import { db } from '../../firebaseConfig'
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, orderBy, getDocs } from "firebase/firestore";
 
 import { AuthContext } from '../../util/auth-context'
 
@@ -31,7 +31,7 @@ const MigsScreen = ({navigation}) => {
         // get all MIGS (Members In Good Standing)
         getAllMigs = async() => {
             const arrayMigs = []
-            const q = query(collection(db, "migs"))
+            const q = query(collection(db, "migs"), orderBy("firstName"),)
             const querySnapshot = await getDocs(q)
             if (querySnapshot.empty) {
                 console.log('Empty MIGS table? Impossible!!!')

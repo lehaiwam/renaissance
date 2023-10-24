@@ -52,9 +52,10 @@ const styles = StyleSheet.create({
     },
     listContainer: {
         width: '100%',
-        height: '100%',
+        //height: '100%',
         backgroundColor: 'transparent',
         paddingHorizontal: 8, 
+        marginBottom: 76,
     }
 
 })
