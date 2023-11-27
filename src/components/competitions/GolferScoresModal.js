@@ -5,7 +5,7 @@ import { CustomColors } from '../../constants/CustomColors'
 
 const GolferScoresModal = ({ showGolferScoresModal,setShowGolferScoresModal, dataItem, competition }) => {
     
-    // console.log(competition, scores, overallScore)
+    // console.log( dataItem.id)
 
     return (
         <Modal  
@@ -21,9 +21,13 @@ const GolferScoresModal = ({ showGolferScoresModal,setShowGolferScoresModal, dat
 
                 <View style={styles.scoresContainer}>
                     {
-                        dataItem.scores.map( (score, index) => {
+                       
+                        dataItem.scores.map( (score, index) => { 
                             return (
-                                <View style={styles.scoreItemContainer}>
+                                <View 
+                                    style={styles.scoreItemContainer}
+                                    key={index+1000}
+                                >
                                     <Text style={styles.gameDescription}>
                                         {competition}-{index+1} :
                                     </Text> 
@@ -50,9 +54,17 @@ const GolferScoresModal = ({ showGolferScoresModal,setShowGolferScoresModal, dat
                     <Text style={styles.closeButtonText}>Close</Text>
                 </Pressable> 
 
-                <Text style={styles.notebeneText}>
-                    NB: A score of 200 denotes, golfer was absent or game is still to be played 
-                </Text>
+                { (competition === 'stableford') &&
+                    <Text style={styles.notebeneText}>
+                        NB: A score of 0 denotes, golfer was absent or game is still to be played 
+                    </Text>
+                }
+
+                { (competition === 'medal') &&
+                    <Text style={styles.notebeneText}>
+                        NB: A score of 200 denotes, golfer was absent or game is still to be played 
+                    </Text>
+                }
             </View>
         </Modal>
     )
